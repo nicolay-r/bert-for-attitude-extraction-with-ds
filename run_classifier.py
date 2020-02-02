@@ -123,6 +123,11 @@ flags.DEFINE_integer(
     "num_tpu_cores", 8,
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
+flags.DEFINE_float(
+    "gpu_memory_fraction", 0.5,
+    "Determines the fraction of the overall amount of memory "
+    "Should be in range [0.0, 1.0]")
+
 
 class InputExample(object):
   """A single training/test example for simple sequence classification."""
@@ -825,7 +830,11 @@ def main(_):
         FLAGS.tpu_name, zone=FLAGS.tpu_zone, project=FLAGS.gcp_project)
 
   is_per_host = tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2
+  config = tf.ConfigProto()
+  config.gpu_options.allow_growth = True
+  config.gpu_options.per_process_gpu_memory_fraction = FLAGS.gpu_memory_fraction
   run_config = tf.contrib.tpu.RunConfig(
+      session_config=config,
       cluster=tpu_cluster_resolver,
       master=FLAGS.master,
       model_dir=FLAGS.output_dir,
