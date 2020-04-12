@@ -124,7 +124,7 @@ flags.DEFINE_integer(
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
 flags.DEFINE_float(
-    "gpu_memory_fraction", 0.5,
+    "gpu_memory_fraction", 0.75,
     "Determines the fraction of the overall amount of memory "
     "Should be in range [0.0, 1.0]")
 
@@ -349,7 +349,7 @@ class ColaProcessor(DataProcessor):
   def get_dev_examples(self, data_dir):
     """See base class."""
     return self._create_examples(
-        self._read_tsv(os.path.join(data_dir, "dev.tsv")), "dev")
+        self._read_tsv(os.path.join(data_dir, "train.tsv")), "dev")
 
   def get_test_examples(self, data_dir):
     """See base class."""
@@ -937,6 +937,7 @@ def main(_):
   if FLAGS.do_predict:
     predict_examples = processor.get_test_examples(FLAGS.data_dir)
     num_actual_predict_examples = len(predict_examples)
+    print("num_actual_predict_examples", len(predict_examples))
     if FLAGS.use_tpu:
       # TPU requires a fixed batch size for all batches, therefore the number
       # of examples must be a multiple of the batch size, or else examples
