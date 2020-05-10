@@ -26,7 +26,7 @@ do
         --init_checkpoint=$m_root/bert_model.ckpt \
         --max_seq_length=$terms_per_context --train_batch_size=$batch_size \
         --learning_rate=2e-5 --num_train_epochs=$epochs \
-        --output_dir=./bert_output/ --do_lower_case=False \
+        --output_dir=$1 --do_lower_case=False \
         --save_checkpoints_steps 10000
 done;
 
