@@ -127,7 +127,7 @@ flags.DEFINE_integer(
     "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
 flags.DEFINE_float(
-    "gpu_memory_fraction", 0.75,
+    "gpu_memory_fraction", 1.0,
     "Determines the fraction of the overall amount of memory "
     "Should be in range [0.0, 1.0]")
 
