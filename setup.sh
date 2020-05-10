@@ -7,3 +7,6 @@ virtualenv --python=python3.6 myenv
 source myenv/bin/activate
 pip install -r requirements.txt
 
+# important to fix this issue: https://github.com/tensorflow/tensorflow/issues/32949
+pip install gast==0.2.2
+
