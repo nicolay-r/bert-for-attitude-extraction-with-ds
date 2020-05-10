@@ -19,12 +19,15 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-import csv
 import os
 import modeling
 import optimization
 import tokenization
 import tensorflow as tf
+
+from core.data_processor import DataProcessor
+from core.input_example import InputExample
+from sae.processors import SAE_3SM_Processor, SAE_PB_Processor, SAE_3PM_Processor
 
 flags = tf.flags
 
@@ -129,27 +132,6 @@ flags.DEFINE_float(
     "Should be in range [0.0, 1.0]")
 
 
-class InputExample(object):
-  """A single training/test example for simple sequence classification."""
-
-  def __init__(self, guid, text_a, text_b=None, label=None):
-    """Constructs a InputExample.
-
-    Args:
-      guid: Unique id for the example.
-      text_a: string. The untokenized text of the first sequence. For single
-        sequence tasks, only this sequence must be specified.
-      text_b: (Optional) string. The untokenized text of the second sequence.
-        Only must be specified for sequence pair tasks.
-      label: (Optional) string. The label of the example. This should be
-        specified for train and dev examples, but not for test examples.
-    """
-    self.guid = guid
-    self.text_a = text_a
-    self.text_b = text_b
-    self.label = label
-
-
 class PaddingInputExample(object):
   """Fake example so the num input examples is a multiple of the batch size.
 
@@ -177,36 +159,6 @@ class InputFeatures(object):
     self.segment_ids = segment_ids
     self.label_id = label_id
     self.is_real_example = is_real_example
-
-
-class DataProcessor(object):
-  """Base class for data converters for sequence classification data sets."""
-
-  def get_train_examples(self, data_dir):
-    """Gets a collection of `InputExample`s for the train set."""
-    raise NotImplementedError()
-
-  def get_dev_examples(self, data_dir):
-    """Gets a collection of `InputExample`s for the dev set."""
-    raise NotImplementedError()
-
-  def get_test_examples(self, data_dir):
-    """Gets a collection of `InputExample`s for prediction."""
-    raise NotImplementedError()
-
-  def get_labels(self):
-    """Gets the list of labels for this data set."""
-    raise NotImplementedError()
-
-  @classmethod
-  def _read_tsv(cls, input_file, quotechar=None):
-    """Reads a tab separated value file."""
-    with tf.gfile.Open(input_file, "r") as f:
-      reader = csv.reader(f, delimiter="\t", quotechar=quotechar)
-      lines = []
-      for line in reader:
-        lines.append(line)
-      return lines
 
 
 class XnliProcessor(DataProcessor):
@@ -608,8 +560,10 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
       # I.e., 0.1 dropout
       output_layer = tf.nn.dropout(output_layer, keep_prob=0.9)
 
+    # Output: Wx + b.
     logits = tf.matmul(output_layer, output_weights, transpose_b=True)
     logits = tf.nn.bias_add(logits, output_bias)
+
     probabilities = tf.nn.softmax(logits, axis=-1)
     log_probs = tf.nn.log_softmax(logits, axis=-1)
 
@@ -793,6 +747,9 @@ def main(_):
       "mnli": MnliProcessor,
       "mrpc": MrpcProcessor,
       "xnli": XnliProcessor,
+      "sae-3sm": SAE_3SM_Processor,
+      "sae-pb": SAE_PB_Processor,
+      "sae-3bm": SAE_3PM_Processor,
   }
 
   tokenization.validate_case_matches_checkpoint(FLAGS.do_lower_case,
