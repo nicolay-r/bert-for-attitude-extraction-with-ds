@@ -37,7 +37,7 @@ do
         --save_checkpoints_steps 10000
 
     # Copy result file
-    cp $out_dir/$predict_file_name $src/$predict_file_name
+    cp $out_dir/$predict_file_name $src/result-test-0.csv
 
 done;
 
