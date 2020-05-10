@@ -6,4 +6,4 @@ wget https://storage.googleapis.com/bert_models/2018_11_23/$fzip -O ./$subdir/$f
 cd ./$subdir/ && unzip $fzip -d .
 
 # Loading data
-git clone https://nicolay_r@bitbucket.org/nicolay_r/bert-rusentrel-experiments.git
+git clone https://nicolay_r@bitbucket.org/nicolay_r/bert-rusentrel-experiments.git data
