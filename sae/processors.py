@@ -18,12 +18,12 @@ class SAE_3SM_Processor(DataProcessor):
     def get_train_examples(self, data_dir):
         """See base class."""
         return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "samples-train-0.tsv")), "train")
+            self._read_tsv(os.path.join(data_dir, "samples-train-0.csv")), "train")
 
     def get_test_examples(self, data_dir):
         """See base class."""
         return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "samples-test-0.tsv")), "test")
+            self._read_tsv(os.path.join(data_dir, "samples-test-0.csv")), "test")
 
     def get_labels(self):
         """See base class."""
@@ -61,12 +61,12 @@ class SAE_PB_Processor(DataProcessor):
     def get_train_examples(self, data_dir):
         """See base class."""
         return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "samples-train-0.tsv")), "train")
+            self._read_tsv(os.path.join(data_dir, "samples-train-0.csv")), "train")
 
     def get_test_examples(self, data_dir):
         """See base class."""
         return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "samples-test-0.tsv")), "test")
+            self._read_tsv(os.path.join(data_dir, "samples-test-0.csv")), "test")
 
     def get_labels(self):
         """See base class."""
@@ -107,12 +107,12 @@ class SAE_3PM_Processor(DataProcessor):
     def get_train_examples(self, data_dir):
         """See base class."""
         return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "samples-train-0.tsv")), "train")
+            self._read_tsv(os.path.join(data_dir, "samples-train-0.csv")), "train")
 
     def get_test_examples(self, data_dir):
         """See base class."""
         return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "samples-test-0.tsv")), "test")
+            self._read_tsv(os.path.join(data_dir, "samples-test-0.csv")), "test")
 
     def get_labels(self):
         """See base class."""
