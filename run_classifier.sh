@@ -18,7 +18,12 @@ do
     # Split into $1 -- folder, $2 -- task_name
     set -- $i;
 
-    src=data/$1
+    src=./data/$1
+
+    predict_file_name=test_results.tsv
+
+    out_dir=./bert_output
+    rm -rf $out_dir
 
     CUDA_VISIBLE_DEVICES=0 python3.6 run_classifier.py \
         --task_name=$2 \
@@ -28,8 +33,12 @@ do
         --init_checkpoint=$m_root/bert_model.ckpt \
         --max_seq_length=$terms_per_context --train_batch_size=$batch_size \
         --learning_rate=2e-5 --num_train_epochs=$epochs \
-        --output_dir=$src --do_lower_case=False \
+        --output_dir=$out_dir --do_lower_case=False \
         --save_checkpoints_steps 10000
+
+    # Copy result file
+    cp $out_dir/$predict_file_name src/$predict_file_name
+
 done;
 
 IFS=$OLDIFS
