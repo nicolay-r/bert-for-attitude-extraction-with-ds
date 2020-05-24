@@ -13,7 +13,11 @@ IFS=','
 for i in bert-c_m,sae-3sm \
          bert-nli_b,sae-pb \
          bert-qa_b,sae-pb \
-         bert-qa_m,sae-3pm;
+         bert-qa_m,sae-3pm \
+         ds-bert-c_m,sae-3sm \
+         ds-bert-nli_b,sae-pb \
+         ds-bert-qa_b,sae-pb \
+         ds-bert-qa_m,sae-3pm;
 do
     # Split into $1 -- folder, $2 -- task_name
     set -- $i;
