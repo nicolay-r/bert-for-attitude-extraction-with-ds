@@ -1,4 +1,6 @@
 import csv
+import gzip
+
 import tensorflow as tf
 
 
@@ -31,4 +33,12 @@ class DataProcessor(object):
                 lines.append(line)
             return lines
 
-
+    @classmethod
+    def _read_tsv_gzip(cls, input_file, quotechar=None):
+        """Reads a tab separated value file."""
+        with gzip.open(input_file, mode="rt") as f:
+            reader = csv.reader(f, delimiter="\t", quotechar=quotechar)
+            lines = []
+            for line in reader:
+                lines.append(line)
+            return lines
