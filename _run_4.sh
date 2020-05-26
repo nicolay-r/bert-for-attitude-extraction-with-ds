@@ -22,7 +22,7 @@ for i in $s4; do
 
     src=./data/$1
 
-    ./run_classifier.sh 0 $folder $task_name
+    ./run_classifier.sh 3 $folder $task_name
 
 done;
 
