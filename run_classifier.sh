@@ -5,16 +5,18 @@
 ###############################################
 
 DEVICE_INDEX=0
+out_dir=./bert_output-$DEVICE_INDEX
+
 terms_per_context=50
 batch_size=4
 epochs=30.0
 m_root="./pretrained/multi_cased_L-12_H-768_A-12"
-do_lowercasing=True
+do_lowercasing=False
 
 OLDIFS=$IFS
 IFS=','
 
-for i in bert-c_m,sae-3sm \
+for i in bert-c_m,sae-3sm
          bert-nli_b,sae-pb \
          bert-qa_b,sae-pb \
          bert-qa_m,sae-3pm \
@@ -31,7 +33,8 @@ do
     predict_file_name=test_results.tsv
 
     cv_index=0
-    out_dir=./bert_output-$DEVICE_INDEX
+
+    mkdir -p $out_dir
     rm -rf $out_dir
 
     CUDA_VISIBLE_DEVICES=$DEVICE_INDEX python3.6 run_classifier.py \
