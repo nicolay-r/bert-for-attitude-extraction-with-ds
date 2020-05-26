@@ -1,7 +1,14 @@
 import os
 import tokenization
+import tensorflow as tf
 from core.data_processor import DataProcessor
 from core.input_example import InputExample
+
+
+flags = tf.flags
+FLAGS = flags.FLAGS
+
+filename_template = "samples-{data_type}-{cv_index}.tsv.gz"
 
 
 class SAE_3SM_Processor(DataProcessor):
@@ -17,13 +24,14 @@ class SAE_3SM_Processor(DataProcessor):
 
     def get_train_examples(self, data_dir):
         """See base class."""
-        return self._create_examples(
-            self._read_tsv_gzip(os.path.join(data_dir, "samples-train-0.tsv.gz")), "train")
+        filename = filename_template.format(data_type='train', cv_index=FLAGS.cv_index)
+        return self._create_examples(self._read_tsv_gzip(os.path.join(data_dir, filename)), "train")
 
     def get_test_examples(self, data_dir):
         """See base class."""
+        filename = filename_template.format(data_type='test', cv_index=FLAGS.cv_index)
         return self._create_examples(
-            self._read_tsv_gzip(os.path.join(data_dir, "samples-test-0.tsv.gz")), "test")
+            self._read_tsv_gzip(os.path.join(data_dir, filename)), "test")
 
     def get_labels(self):
         """See base class."""
@@ -60,13 +68,15 @@ class SAE_PB_Processor(DataProcessor):
 
     def get_train_examples(self, data_dir):
         """See base class."""
+        filename = filename_template.format(data_type='train', cv_index=FLAGS.cv_index)
         return self._create_examples(
-            self._read_tsv_gzip(os.path.join(data_dir, "samples-train-0.tsv.gz")), "train")
+            self._read_tsv_gzip(os.path.join(data_dir, filename)), "train")
 
     def get_test_examples(self, data_dir):
         """See base class."""
+        filename = filename_template.format(data_type='test', cv_index=FLAGS.cv_index)
         return self._create_examples(
-            self._read_tsv_gzip(os.path.join(data_dir, "samples-test-0.tsv.gz")), "test")
+            self._read_tsv_gzip(os.path.join(data_dir, filename)), "test")
 
     def get_labels(self):
         """See base class."""
@@ -106,13 +116,15 @@ class SAE_3PM_Processor(DataProcessor):
 
     def get_train_examples(self, data_dir):
         """See base class."""
+        filename = filename_template.format(data_type='train', cv_index=FLAGS.cv_index)
         return self._create_examples(
-            self._read_tsv_gzip(os.path.join(data_dir, "samples-train-0.tsv.gz")), "train")
+            self._read_tsv_gzip(os.path.join(data_dir, filename)), "train")
 
     def get_test_examples(self, data_dir):
         """See base class."""
+        filename = filename_template.format(data_type='test', cv_index=FLAGS.cv_index)
         return self._create_examples(
-            self._read_tsv_gzip(os.path.join(data_dir, "samples-test-0.tsv.gz")), "test")
+            self._read_tsv_gzip(os.path.join(data_dir, filename)), "test")
 
     def get_labels(self):
         """See base class."""
