@@ -1,4 +1,6 @@
 import os
+import random
+
 import tokenization
 import tensorflow as tf
 from core.data_processor import DataProcessor
@@ -53,6 +55,9 @@ class SAE_3SM_Processor(DataProcessor):
                 label = tokenization.convert_to_unicode(line[1])
             examples.append(
                 InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+
+        random.shuffle(examples)
+
         return examples
 
 
@@ -100,6 +105,9 @@ class SAE_PB_Processor(DataProcessor):
                 label = tokenization.convert_to_unicode(line[1])
             examples.append(
                 InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+
+        random.shuffle(examples)
+
         return examples
 
 
@@ -148,4 +156,7 @@ class SAE_3PM_Processor(DataProcessor):
                 label = tokenization.convert_to_unicode(line[1])
             examples.append(
                 InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+
+        random.shuffle(examples)
+
         return examples
