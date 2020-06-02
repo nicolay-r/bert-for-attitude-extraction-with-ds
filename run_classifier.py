@@ -751,7 +751,7 @@ def main(_):
       "xnli": XnliProcessor,
       "sae-3sm": SAE_3SM_Processor,
       "sae-pb": SAE_PB_Processor,
-      "sae-3bm": SAE_3PM_Processor,
+      "sae-3pm": SAE_3PM_Processor,
   }
 
   tokenization.validate_case_matches_checkpoint(FLAGS.do_lower_case,
