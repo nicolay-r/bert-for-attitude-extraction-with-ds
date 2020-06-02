@@ -36,7 +36,7 @@ class DataProcessor(object):
     @classmethod
     def _read_tsv_gzip(cls, input_file, quotechar=None):
         """Reads a tab separated value file."""
-        with gzip.open(input_file, mode="rt") as f:
+        with gzip.open(input_file, mode="rt", encoding='utf-8') as f:
             reader = csv.reader(f, delimiter="\t", quotechar=quotechar)
             lines = []
             for line in reader:
