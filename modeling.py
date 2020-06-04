@@ -503,85 +503,57 @@ def embedding_postprocessor(input_tensor,
       # using a (long) sequence length `max_position_embeddings`. The actual
       # sequence length might be shorter than this, for faster training of
       # tasks that do not have long sequences.
-      position_embeddings = create_position_embedding(
-          full_position_embeddings=full_position_embeddings,
-          position_ids=position_ids,
-          seq_length=seq_length)
-      num_dims = len(output.shape.as_list())
-
-      # Only the last two dimensions are relevant (`seq_length` and `width`), so
-      # we broadcast among the first dimensions, which is typically just
-      # the batch size.
-      position_broadcast_shape = []
-      for _ in range(num_dims - 2):
-        position_broadcast_shape.append(1)
-      position_broadcast_shape.extend([seq_length, width])
+      # So `full_position_embeddings` is effectively an embedding table
+      # for position [0, 1, 2, ..., max_position_embeddings-1], and the current
+      # sequence has positions [0, 1, 2, ... seq_length-1], so we can just
+      # perform a slice.
+      sliced = tf.slice(full_position_embeddings, [0, 0], [seq_length, -1])
+      position_embeddings = reorder_elements_in_input(
+          sliced=sliced,
+          inds=position_ids,
+          batch_size=batch_size,
+          handler=sliced_reordering)
       position_embeddings = tf.reshape(position_embeddings,
-                                       position_broadcast_shape)
+                                       [batch_size, seq_length, width])
+
       output += position_embeddings
 
   output = layer_norm_and_dropout(output, dropout_prob)
   return output
 
 
-def create_position_embedding(full_position_embeddings, position_ids, seq_length):
-  """
-  Args:
-    full_position_embeddings: float Tensor of shape [max_position_embeddings, width]
-    position_ids: int Tensor of shape [batch_size, seq_length]
-    seq_length: int
-  """
-
-  # So `full_position_embeddings` is effectively an embedding table
-  # for position [0, 1, 2, ..., max_position_embeddings-1], and the current
-  # sequence has positions [0, 1, 2, ... seq_length-1], so we can just
-  # perform a slice.
-  sliced = tf.slice(full_position_embeddings, [0, 0], [seq_length, -1])
-
-  if position_ids is None:
-      return sliced
-
-  # return reorder_elements_in_input(elements=sliced,
-  #                                  inds=position_ids,
-  #                                  handler=row_elements_reorder)
-
-  return sliced
-
-
-def reorder_elements_in_input(elements, inds, handler):
+def reorder_elements_in_input(sliced, inds, handler, batch_size):
   """
   Args:
     Process each element in batch by handler function
-    elements:  [batch_size, seq_length]
+    sliced:  [batch_size, seq_length]
     inds: array of int [batch_size, ...]
   """
-  batch_size = elements.shape[0]
-  seq_length = elements.shape[1]
-
   reordered = tf.TensorArray(dtype=tf.float32,
-                             name="reordered",
                              size=batch_size,
                              infer_shape=False,
                              dynamic_size=True)
 
-  _, _, _, _, reordered = tf.while_loop(
+  _, _, _, reordered = tf.while_loop(
       lambda i, *_: tf.less(i, batch_size),
       handler,
-      (0, elements, inds, seq_length, reordered))
+      (0, sliced, inds, reordered))
 
-  return tf.reshape(reordered.stack(), [batch_size, seq_length])
+  return reordered.stack()
 
 
-def row_elements_reorder(i, elements, orders, seq_length, filtered):
-  row_elements = tf.squeeze(tf.gather(elements, [i], axis=0))
-  order = tf.squeeze(tf.gather(orders, [i], axis=0))
-  reordered = tf.gather(row_elements, order, axis=0)
-  reordered = tf.reshape(reordered, shape=[seq_length])
+def sliced_reordering(i, blank, order_ids, result):
+  """
+  Args:
+    i: int
+      batch index
+  """
+  order = tf.squeeze(tf.gather(order_ids, [i], axis=0))
+  reordered = tf.gather(blank, order, axis=0)
   return (i + 1,
-          elements,
-          orders,
-          seq_length,
-          filtered.write(i, reordered))
+          blank,
+          order_ids,
+          result.write(i, reordered))
 
 
 def create_attention_mask_from_input_mask(from_tensor, to_mask):
