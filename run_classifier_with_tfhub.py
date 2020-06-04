@@ -159,9 +159,6 @@ def main(_):
   tf.logging.set_verbosity(tf.logging.INFO)
 
   processors = {
-      "cola": run_classifier.ColaProcessor,
-      "mnli": run_classifier.MnliProcessor,
-      "mrpc": run_classifier.MrpcProcessor,
   }
 
   if not FLAGS.do_train and not FLAGS.do_eval:
