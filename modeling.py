@@ -541,9 +541,11 @@ def create_position_embedding(full_position_embeddings, position_ids, seq_length
   if position_ids is None:
       return sliced
 
-  return reorder_elements_in_input(elements=sliced,
-                                   inds=position_ids,
-                                   handler=row_elements_reorder)
+  # return reorder_elements_in_input(elements=sliced,
+  #                                  inds=position_ids,
+  #                                  handler=row_elements_reorder)
+
+  return sliced
 
 
 def reorder_elements_in_input(elements, inds, handler):
@@ -562,21 +564,23 @@ def reorder_elements_in_input(elements, inds, handler):
                              infer_shape=False,
                              dynamic_size=True)
 
-  _, _, _, reordered = tf.while_loop(
+  _, _, _, _, reordered = tf.while_loop(
       lambda i, *_: tf.less(i, batch_size),
       handler,
-      (0, elements, inds, tf.reshape(reordered, shape=[seq_length])))
+      (0, elements, inds, seq_length, reordered))
 
-  return reordered.stack()
+  return tf.reshape(reordered.stack(), [batch_size, seq_length])
 
 
-def row_elements_reorder(i, elements, orders, filtered):
+def row_elements_reorder(i, elements, orders, seq_length, filtered):
   row_elements = tf.squeeze(tf.gather(elements, [i], axis=0))
   order = tf.squeeze(tf.gather(orders, [i], axis=0))
   reordered = tf.gather(row_elements, order, axis=0)
+  reordered = tf.reshape(reordered, shape=[seq_length])
   return (i + 1,
           elements,
           orders,
+          seq_length,
           filtered.write(i, reordered))
 
 

@@ -25,9 +25,9 @@ import optimization
 import tokenization
 import tensorflow as tf
 
-from core.data_processor import DataProcessor
 from core.input_example import InputExample
 from sae.processors import SAE_3SM_Processor, SAE_PB_Processor, SAE_3PM_Processor
+from utils import abs_nearest_dist
 
 flags = tf.flags
 
@@ -169,13 +169,6 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
                            tokenizer):
   """Converts a single `InputExample` into a single `InputFeatures`."""
 
-  def __abs_nearest_dist(positions, size):
-      result = []
-      for i in range(size):
-          dist = min([abs(i - pos) for pos in positions])
-          result.append(dist)
-      return result
-
   if isinstance(example, PaddingInputExample):
     return InputFeatures(
         input_ids=[0] * max_seq_length,
@@ -241,9 +234,9 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
     segment_ids.append(1)
 
   input_ids = tokenizer.convert_tokens_to_ids(tokens)
-  position_ids = __abs_nearest_dist(positions=[tokens_a.index(InputExample.ESource),
-                                               tokens_a.index(InputExample.ETarget)],
-                                    size=len(input_ids))
+  position_ids = abs_nearest_dist(positions=[tokens_a.index(InputExample.ESource),
+                                             tokens_a.index(InputExample.ETarget)],
+                                  size=len(input_ids))
 
   # The mask has 1 for real tokens and 0 for padding tokens. Only real
   # tokens are attended to.
