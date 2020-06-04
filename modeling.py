@@ -565,7 +565,7 @@ def reorder_elements_in_input(elements, inds, handler):
   _, _, _, reordered = tf.while_loop(
       lambda i, *_: tf.less(i, batch_size),
       handler,
-      (0, elements, inds, tf.reshape(reordered, shape=[seq_length]))
+      (0, elements, inds, tf.reshape(reordered, shape=[seq_length])))
 
   return reordered.stack()
 
