@@ -169,6 +169,13 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
                            tokenizer):
   """Converts a single `InputExample` into a single `InputFeatures`."""
 
+  def __abs_nearest_dist(positions, size):
+      result = []
+      for i in range(size):
+          dist = min([abs(i - pos) for pos in positions])
+          result.append(dist)
+      return result
+
   if isinstance(example, PaddingInputExample):
     return InputFeatures(
         input_ids=[0] * max_seq_length,
@@ -183,6 +190,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
     label_map[label] = i
 
   tokens_a = tokenizer.tokenize(example.text_a)
+
   tokens_b = None
   if example.text_b:
     tokens_b = tokenizer.tokenize(example.text_b)
@@ -217,7 +225,6 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
   # the entire model is fine-tuned.
   tokens = []
   segment_ids = []
-  position_ids = []
   tokens.append("[CLS]")
   segment_ids.append(0)
   for token in tokens_a:
@@ -234,6 +241,9 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
     segment_ids.append(1)
 
   input_ids = tokenizer.convert_tokens_to_ids(tokens)
+  position_ids = __abs_nearest_dist(positions=[tokens_a.index(InputExample.ESource),
+                                               tokens_a.index(InputExample.ETarget)],
+                                    size=len(input_ids))
 
   # The mask has 1 for real tokens and 0 for padding tokens. Only real
   # tokens are attended to.
@@ -267,7 +277,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
       input_ids=input_ids,
       input_mask=input_mask,
       segment_ids=segment_ids,
-      position_ids=None,
+      position_ids=position_ids,
       label_id=label_id,
       is_real_example=True)
   return feature
@@ -518,11 +528,13 @@ def input_fn_builder(features, seq_length, is_training, drop_remainder):
   all_input_mask = []
   all_segment_ids = []
   all_label_ids = []
+  all_position_ids = []
 
   for feature in features:
     all_input_ids.append(feature.input_ids)
     all_input_mask.append(feature.input_mask)
     all_segment_ids.append(feature.segment_ids)
+    all_position_ids.append(feature.position_ids)
     all_label_ids.append(feature.label_id)
 
   def input_fn(params):
@@ -547,6 +559,11 @@ def input_fn_builder(features, seq_length, is_training, drop_remainder):
         "segment_ids":
             tf.constant(
                 all_segment_ids,
+                shape=[num_examples, seq_length],
+                dtype=tf.int32),
+        "position_ids":
+            tf.constant(
+                all_position_ids,
                 shape=[num_examples, seq_length],
                 dtype=tf.int32),
         "label_ids":
