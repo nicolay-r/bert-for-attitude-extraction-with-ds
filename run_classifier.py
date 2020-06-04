@@ -154,11 +154,13 @@ class InputFeatures(object):
                input_ids,
                input_mask,
                segment_ids,
+               position_ids,
                label_id,
                is_real_example=True):
     self.input_ids = input_ids
     self.input_mask = input_mask
     self.segment_ids = segment_ids
+    self.position_ids = position_ids
     self.label_id = label_id
     self.is_real_example = is_real_example
 
@@ -342,6 +344,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
         input_ids=[0] * max_seq_length,
         input_mask=[0] * max_seq_length,
         segment_ids=[0] * max_seq_length,
+        position_ids=[0] * max_seq_length,
         label_id=0,
         is_real_example=False)
 
@@ -384,6 +387,7 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
   # the entire model is fine-tuned.
   tokens = []
   segment_ids = []
+  position_ids = []
   tokens.append("[CLS]")
   segment_ids.append(0)
   for token in tokens_a:
@@ -410,10 +414,12 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
     input_ids.append(0)
     input_mask.append(0)
     segment_ids.append(0)
+    position_ids.append(0)
 
   assert len(input_ids) == max_seq_length
   assert len(input_mask) == max_seq_length
   assert len(segment_ids) == max_seq_length
+  assert len(position_ids) == max_seq_length
 
   label_id = label_map[example.label]
   if ex_index < 5:
@@ -424,12 +430,14 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
     tf.logging.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
     tf.logging.info("input_mask: %s" % " ".join([str(x) for x in input_mask]))
     tf.logging.info("segment_ids: %s" % " ".join([str(x) for x in segment_ids]))
+    tf.logging.info("position_ids: %s" % " ".join([str(x) for x in position_ids]))
     tf.logging.info("label: %s (id = %d)" % (example.label, label_id))
 
   feature = InputFeatures(
       input_ids=input_ids,
       input_mask=input_mask,
       segment_ids=segment_ids,
+      position_ids=None,
       label_id=label_id,
       is_real_example=True)
   return feature
@@ -530,7 +538,7 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
       tokens_b.pop()
 
 
-def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
+def create_model(bert_config, is_training, input_ids, input_mask, segment_ids, position_ids,
                  labels, num_labels, use_one_hot_embeddings):
   """Creates a classification model."""
   model = modeling.BertModel(
@@ -539,6 +547,7 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
       input_ids=input_ids,
       input_mask=input_mask,
       token_type_ids=segment_ids,
+      position_ids=position_ids,
       use_one_hot_embeddings=use_one_hot_embeddings)
 
   # In the demo, we are doing a simple classification task on the entire
@@ -592,6 +601,7 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
     input_ids = features["input_ids"]
     input_mask = features["input_mask"]
     segment_ids = features["segment_ids"]
+    position_ids = features["position_ids"]
     label_ids = features["label_ids"]
     is_real_example = None
     if "is_real_example" in features:
@@ -602,7 +612,7 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
     is_training = (mode == tf.estimator.ModeKeys.TRAIN)
 
     (total_loss, per_example_loss, logits, probabilities) = create_model(
-        bert_config, is_training, input_ids, input_mask, segment_ids, label_ids,
+        bert_config, is_training, input_ids, input_mask, segment_ids, position_ids, label_ids,
         num_labels, use_one_hot_embeddings)
 
     tvars = tf.trainable_variables()

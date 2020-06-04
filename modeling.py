@@ -132,6 +132,7 @@ class BertModel(object):
                config,
                is_training,
                input_ids,
+               position_ids=None,
                input_mask=None,
                token_type_ids=None,
                use_one_hot_embeddings=False,
@@ -143,6 +144,7 @@ class BertModel(object):
       is_training: bool. true for training model, false for eval model. Controls
         whether dropout will be applied.
       input_ids: int32 Tensor of shape [batch_size, seq_length].
+      position_ids: int32 Tensor of shape [batch_size, seq_length].
       input_mask: (optional) int32 Tensor of shape [batch_size, seq_length].
       token_type_ids: (optional) int32 Tensor of shape [batch_size, seq_length].
       use_one_hot_embeddings: (optional) bool. Whether to use one-hot word
@@ -185,6 +187,7 @@ class BertModel(object):
             input_tensor=self.embedding_output,
             use_token_type=True,
             token_type_ids=token_type_ids,
+            position_ids=position_ids,
             token_type_vocab_size=config.type_vocab_size,
             token_type_embedding_name="token_type_embeddings",
             use_position_embeddings=True,
@@ -428,6 +431,7 @@ def embedding_lookup(input_ids,
 def embedding_postprocessor(input_tensor,
                             use_token_type=False,
                             token_type_ids=None,
+                            position_ids=None,
                             token_type_vocab_size=16,
                             token_type_embedding_name="token_type_embeddings",
                             use_position_embeddings=True,
@@ -443,6 +447,7 @@ def embedding_postprocessor(input_tensor,
     use_token_type: bool. Whether to add embeddings for `token_type_ids`.
     token_type_ids: (optional) int32 Tensor of shape [batch_size, seq_length].
       Must be specified if `use_token_type` is True.
+    position_ids: int Tensor of shape [batch_size, seq_length]
     token_type_vocab_size: int. The vocabulary size of `token_type_ids`.
     token_type_embedding_name: string. The name of the embedding table variable
       for token type ids.
@@ -492,18 +497,16 @@ def embedding_postprocessor(input_tensor,
       full_position_embeddings = tf.get_variable(
           name=position_embedding_name,
           shape=[max_position_embeddings, width],
-          initializer=create_initializer(initializer_range))
+          initializer=create_initializer(initializer_range),
+          dtype=tf.float32)
       # Since the position embedding table is a learned variable, we create it
       # using a (long) sequence length `max_position_embeddings`. The actual
       # sequence length might be shorter than this, for faster training of
       # tasks that do not have long sequences.
-      #
-      # So `full_position_embeddings` is effectively an embedding table
-      # for position [0, 1, 2, ..., max_position_embeddings-1], and the current
-      # sequence has positions [0, 1, 2, ... seq_length-1], so we can just
-      # perform a slice.
-      position_embeddings = tf.slice(full_position_embeddings, [0, 0],
-                                     [seq_length, -1])
+      position_embeddings = create_position_embedding(
+          full_position_embeddings=full_position_embeddings,
+          position_ids=position_ids,
+          seq_length=seq_length)
       num_dims = len(output.shape.as_list())
 
       # Only the last two dimensions are relevant (`seq_length` and `width`), so
@@ -519,6 +522,62 @@ def embedding_postprocessor(input_tensor,
 
   output = layer_norm_and_dropout(output, dropout_prob)
   return output
+
+
+def create_position_embedding(full_position_embeddings, position_ids, seq_length):
+  """
+  Args:
+    full_position_embeddings: float Tensor of shape [max_position_embeddings, width]
+    position_ids: int Tensor of shape [batch_size, seq_length]
+    seq_length: int
+  """
+
+  # So `full_position_embeddings` is effectively an embedding table
+  # for position [0, 1, 2, ..., max_position_embeddings-1], and the current
+  # sequence has positions [0, 1, 2, ... seq_length-1], so we can just
+  # perform a slice.
+  sliced = tf.slice(full_position_embeddings, [0, 0], [seq_length, -1])
+
+  if position_ids is None:
+      return sliced
+
+  return reorder_elements_in_input(elements=sliced,
+                                   inds=position_ids,
+                                   handler=row_elements_reorder)
+
+
+def reorder_elements_in_input(elements, inds, handler):
+  """
+  Args:
+    Process each element in batch by handler function
+    elements:  [batch_size, seq_length]
+    inds: array of int [batch_size, ...]
+  """
+  batch_size = elements.shape[0]
+  seq_length = elements.shape[1]
+
+  reordered = tf.TensorArray(dtype=tf.float32,
+                             name="reordered",
+                             size=batch_size,
+                             infer_shape=False,
+                             dynamic_size=True)
+
+  _, _, _, reordered = tf.while_loop(
+      lambda i, *_: tf.less(i, batch_size),
+      handler,
+      (0, elements, inds, tf.reshape(reordered, shape=[seq_length]))
+
+  return reordered.stack()
+
+
+def row_elements_reorder(i, elements, orders, filtered):
+  row_elements = tf.squeeze(tf.gather(elements, [i], axis=0))
+  order = tf.squeeze(tf.gather(orders, [i], axis=0))
+  reordered = tf.gather(row_elements, order, axis=0)
+  return (i + 1,
+          elements,
+          orders,
+          filtered.write(i, reordered))
 
 
 def create_attention_mask_from_input_mask(from_tensor, to_mask):
