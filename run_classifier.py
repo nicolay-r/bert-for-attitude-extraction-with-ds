@@ -25,9 +25,10 @@ import optimization
 import tokenization
 import tensorflow as tf
 
+import utils
 from core.input_example import InputExample
 from sae.processors import SAE_3SM_Processor, SAE_PB_Processor, SAE_3PM_Processor
-from utils import abs_nearest_dist
+from utils import __abs_nearest_dist
 
 flags = tf.flags
 
@@ -234,18 +235,8 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
     segment_ids.append(1)
 
   input_ids = tokenizer.convert_tokens_to_ids(tokens)
-
-  borders = [i for i, t in enumerate(tokens) if t == "#"]
-  borders = [(borders[i * 2], borders[i * 2 + 1]) for i in range(len(borders) // 2)]
-
-  positions = []
-  print(borders)
-  for pair in borders:
-      rng = list(range(pair[0] + 1, pair[1]))
-      positions.extend(rng)
-
-  position_ids = abs_nearest_dist(positions=positions,
-                                  size=len(input_ids))
+  position_ids = utils.calculate_position_ids(tokens_a=tokens_a,
+                                              input_ids_count=len(segment_ids))
 
   # The mask has 1 for real tokens and 0 for padding tokens. Only real
   # tokens are attended to.
@@ -306,6 +297,7 @@ def file_based_convert_examples_to_features(
     features["input_ids"] = create_int_feature(feature.input_ids)
     features["input_mask"] = create_int_feature(feature.input_mask)
     features["segment_ids"] = create_int_feature(feature.segment_ids)
+    features["position_ids"] = create_int_feature(feature.position_ids)
     features["label_ids"] = create_int_feature([feature.label_id])
     features["is_real_example"] = create_int_feature(
         [int(feature.is_real_example)])
@@ -323,6 +315,7 @@ def file_based_input_fn_builder(input_file, seq_length, is_training,
       "input_ids": tf.FixedLenFeature([seq_length], tf.int64),
       "input_mask": tf.FixedLenFeature([seq_length], tf.int64),
       "segment_ids": tf.FixedLenFeature([seq_length], tf.int64),
+      "position_ids": tf.FixedLenFeature([seq_length], tf.int64),
       "label_ids": tf.FixedLenFeature([], tf.int64),
       "is_real_example": tf.FixedLenFeature([], tf.int64),
   }

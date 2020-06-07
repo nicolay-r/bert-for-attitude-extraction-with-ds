@@ -175,7 +175,7 @@ class BertModelTest(tf.test.TestCase):
       values = []
       for _ in range(shape[0]):
         pos = [rng.randint(0, seq_length-1) for _ in range(2)]
-        values.extend(utils.abs_nearest_dist(pos, seq_length))
+        values.extend(utils.__abs_nearest_dist(pos, seq_length))
 
       return tf.constant(value=values, dtype=tf.int32, shape=shape, name=name)
 

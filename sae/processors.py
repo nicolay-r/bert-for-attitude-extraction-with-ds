@@ -48,13 +48,22 @@ class SAE_3SM_Processor(DataProcessor):
                 continue
             guid = "%s-%s" % (set_type, i)
             if set_type == "test":
-                text_a = tokenization.convert_to_unicode(line[1])
                 label = "0"
+                text_a = tokenization.convert_to_unicode(line[1])
+                s_obj = tokenization.convert_to_unicode(line[2])
+                t_obj = tokenization.convert_to_unicode(line[3])
             else:
-                text_a = tokenization.convert_to_unicode(line[2])
                 label = tokenization.convert_to_unicode(line[1])
+                text_a = tokenization.convert_to_unicode(line[2])
+                s_obj = tokenization.convert_to_unicode(line[3])
+                t_obj = tokenization.convert_to_unicode(line[4])
             examples.append(
-                InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+                InputExample(guid=guid,
+                             text_a=text_a,
+                             text_b=None,
+                             s_obj=int(s_obj),
+                             t_obj=int(t_obj),
+                             label=label))
 
         random.shuffle(examples)
 
@@ -96,15 +105,24 @@ class SAE_PB_Processor(DataProcessor):
                 continue
             guid = "%s-%s" % (set_type, i)
             if set_type == "test":
+                label = "0"
                 text_a = tokenization.convert_to_unicode(line[1])
                 text_b = tokenization.convert_to_unicode(line[2])
-                label = "0"
+                s_obj = tokenization.convert_to_unicode(line[3])
+                t_obj = tokenization.convert_to_unicode(line[4])
             else:
+                label = tokenization.convert_to_unicode(line[1])
                 text_a = tokenization.convert_to_unicode(line[2])
                 text_b = tokenization.convert_to_unicode(line[3])
-                label = tokenization.convert_to_unicode(line[1])
+                s_obj = tokenization.convert_to_unicode(line[4])
+                t_obj = tokenization.convert_to_unicode(line[5])
             examples.append(
-                InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+                InputExample(guid=guid,
+                             text_a=text_a,
+                             text_b=text_b,
+                             s_obj=int(s_obj),
+                             t_obj=int(t_obj),
+                             label=label))
 
         random.shuffle(examples)
 
@@ -147,15 +165,24 @@ class SAE_3PM_Processor(DataProcessor):
                 continue
             guid = "%s-%s" % (set_type, i)
             if set_type == "test":
+                label = "0"
                 text_a = tokenization.convert_to_unicode(line[1])
                 text_b = tokenization.convert_to_unicode(line[2])
-                label = "0"
+                s_obj = tokenization.convert_to_unicode(line[3])
+                t_obj = tokenization.convert_to_unicode(line[4])
             else:
+                label = tokenization.convert_to_unicode(line[1])
                 text_a = tokenization.convert_to_unicode(line[2])
                 text_b = tokenization.convert_to_unicode(line[3])
-                label = tokenization.convert_to_unicode(line[1])
+                s_obj = tokenization.convert_to_unicode(line[4])
+                t_obj = tokenization.convert_to_unicode(line[5])
             examples.append(
-                InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
+                InputExample(guid=guid,
+                             text_a=text_a,
+                             text_b=text_b,
+                             s_obj=int(s_obj),
+                             t_obj=int(t_obj),
+                             label=label))
 
         random.shuffle(examples)
 
