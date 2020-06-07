@@ -65,6 +65,11 @@ flags.DEFINE_bool(
     "Whether to lower case the input text. Should be True for uncased "
     "models and False for cased models.")
 
+flags.DEFINE_bool(
+    "use_custom_distance", True,
+    "Whether to use a distance calculation, based on attitude ends (subject and object), appeared in text_a."
+    "Otherwise use default distance embedding in BERT")
+
 flags.DEFINE_integer("cv_index", 0, "Cross-validation index of the task.")
 
 flags.DEFINE_integer(
@@ -374,7 +379,7 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
 
 
 def create_model(bert_config, is_training, input_ids, input_mask, segment_ids, position_ids,
-                 labels, num_labels, use_one_hot_embeddings):
+                 labels, num_labels, use_one_hot_embeddings, use_custom_dist_embedding):
   """Creates a classification model."""
   model = modeling.BertModel(
       config=bert_config,
@@ -382,7 +387,7 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids, p
       input_ids=input_ids,
       input_mask=input_mask,
       token_type_ids=segment_ids,
-      position_ids=position_ids,
+      position_ids=position_ids if use_custom_dist_embedding else None,
       use_one_hot_embeddings=use_one_hot_embeddings)
 
   # In the demo, we are doing a simple classification task on the entire
@@ -423,7 +428,7 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids, p
 
 def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                      num_train_steps, num_warmup_steps, use_tpu,
-                     use_one_hot_embeddings):
+                     use_one_hot_embeddings, use_custom_dist_embedding):
   """Returns `model_fn` closure for TPUEstimator."""
 
   def model_fn(features, labels, mode, params):  # pylint: disable=unused-argument
@@ -448,7 +453,7 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
 
     (total_loss, per_example_loss, logits, probabilities) = create_model(
         bert_config, is_training, input_ids, input_mask, segment_ids, position_ids, label_ids,
-        num_labels, use_one_hot_embeddings)
+        num_labels, use_one_hot_embeddings, use_custom_dist_embedding)
 
     tvars = tf.trainable_variables()
     initialized_variable_names = {}
@@ -668,7 +673,8 @@ def main(_):
       num_train_steps=num_train_steps,
       num_warmup_steps=num_warmup_steps,
       use_tpu=FLAGS.use_tpu,
-      use_one_hot_embeddings=FLAGS.use_tpu)
+      use_one_hot_embeddings=FLAGS.use_tpu,
+      use_custom_dist_embedding=FLAGS.use_custom_distance)
 
   # If TPU is not available, this will fall back to normal Estimator on CPU
   # or GPU.

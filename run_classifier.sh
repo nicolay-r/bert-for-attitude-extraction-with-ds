@@ -25,6 +25,7 @@ batch_size=12
 epochs=30.0
 m_root="./pretrained/multi_cased_L-12_H-768_A-12"
 do_lowercasing=False
+use_custom_distance=True
 
 src=./data/$folder
 
@@ -47,6 +48,7 @@ while [ "$i" -lt $cv_count ]; do
     rm -rf $out_dir/*
 
     CUDA_VISIBLE_DEVICES=$device_index python3.6 run_classifier.py \
+        --use_custom_distance=$use_custom_distance \
         --task_name=$task_name \
         --cv_index=$cv_index \
         --do_predict=true --do_train=true \

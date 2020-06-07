@@ -7,7 +7,7 @@
 
 source _models.sh
 
-for i in $m1; do
+for i in $s1; do
 
     OLDIFS=$IFS
     IFS=','
