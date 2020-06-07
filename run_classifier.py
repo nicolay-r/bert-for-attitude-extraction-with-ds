@@ -234,8 +234,17 @@ def convert_single_example(ex_index, example, label_list, max_seq_length,
     segment_ids.append(1)
 
   input_ids = tokenizer.convert_tokens_to_ids(tokens)
-  position_ids = abs_nearest_dist(positions=[tokens_a.index(InputExample.ESource),
-                                             tokens_a.index(InputExample.ETarget)],
+
+  borders = [i for i, t in enumerate(tokens) if t == "#"]
+  borders = [(borders[i * 2], borders[i * 2 + 1]) for i in range(len(borders) // 2)]
+
+  positions = []
+  print(borders)
+  for pair in borders:
+      rng = list(range(pair[0] + 1, pair[1]))
+      positions.extend(rng)
+
+  position_ids = abs_nearest_dist(positions=positions,
                                   size=len(input_ids))
 
   # The mask has 1 for real tokens and 0 for padding tokens. Only real

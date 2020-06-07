@@ -1,8 +1,7 @@
 class InputExample(object):
   """A single training/test example for simple sequence classification."""
 
-  ESource = '#ES'
-  ETarget = '#ET'
+  SEP = "#"
 
   def __init__(self, guid, text_a, s_obj, t_obj, text_b=None, label=None):
     """Constructs a InputExample.
@@ -25,5 +24,13 @@ class InputExample(object):
   def __replace_ends(data, s_obj, t_obj):
     """ Replacing ends in order to find them later, after tokenization
     """
-    data[s_obj] = InputExample.ESource
-    data[t_obj] = InputExample.ETarget
+    result = []
+    for i, term in data:
+      if i == s_obj or i == t_obj:
+        result.append(InputExample.SEP)
+        result.append(term)
+        result.append(InputExample.SEP)
+      else:
+        result.append(term)
+    return result
+
