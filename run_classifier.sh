@@ -20,8 +20,8 @@ echo DIR: $folder
 echo TASK: $task_name
 
 
-terms_per_context=150
-batch_size=32
+terms_per_context=250
+batch_size=12
 epochs=30.0
 m_root="./pretrained/multi_cased_L-12_H-768_A-12"
 do_lowercasing=False
