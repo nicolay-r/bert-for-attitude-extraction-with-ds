@@ -7,6 +7,8 @@ class InputExample(object):
   SEP = "#"
   WORD_SEP = " "
   ExpectedTextASize = 50
+  OBJ_MASK = "OBJ"
+  SUBJ_MASK = "SUBJ"
 
   def __init__(self, guid, text_a, s_obj, t_obj, text_b=None, label=None):
     """Constructs a InputExample.
@@ -27,7 +29,6 @@ class InputExample(object):
 
   @staticmethod
   def __process_text_a(text, s_obj, t_obj):
-    assert(isinstance(text, unicode))
     assert(isinstance(s_obj, int))
     assert(isinstance(t_obj, int))
 
@@ -53,6 +54,11 @@ class InputExample(object):
     assert(isinstance(terms, list))
     assert(isinstance(e1_in, int))
     assert(isinstance(e2_in, int))
+
+    entities = [InputExample.OBJ_MASK, InputExample.SUBJ_MASK]
+
+    assert(terms[e1_in] in entities)
+    assert(terms[e2_in] in entities)
 
     result = []
     for term_index, term in enumerate(terms):
