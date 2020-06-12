@@ -1,8 +1,12 @@
+from core.input_a import ContextCropService
+
+
 class InputExample(object):
   """A single training/test example for simple sequence classification."""
 
   SEP = "#"
   WORD_SEP = " "
+  ExpectedTextASize = 50
 
   def __init__(self, guid, text_a, s_obj, t_obj, text_b=None, label=None):
     """Constructs a InputExample.
@@ -16,33 +20,48 @@ class InputExample(object):
       label: (Optional) string. The label of the example. This should be
         specified for train and dev examples, but not for test examples.
     """
-    assert(isinstance(s_obj, int))
-    assert(isinstance(t_obj, int))
-
     self.guid = guid
-    self.text_a = self.__replace_ends(text_a.split(self.WORD_SEP), s_obj, t_obj)
+    self.text_a = InputExample.__process_text_a(text=text_a, s_obj=s_obj, t_obj=t_obj)
     self.text_b = text_b
     self.label = label
 
   @staticmethod
-  def __replace_ends(data, s_obj, t_obj):
-    """ Replacing ends in order to find them later, after tokenization
-    """
-    assert(isinstance(data, list))
+  def __process_text_a(text, s_obj, t_obj):
+    assert(isinstance(text, unicode))
     assert(isinstance(s_obj, int))
     assert(isinstance(t_obj, int))
 
+    terms = text.strip().split(InputExample.WORD_SEP)
+
+    # We substract 4 in order to organize a placeholder for extra chars,
+    # which surrounds object and subject
+    cropped_text = ContextCropService.fit_context_vector(
+      vector=terms, e1_in=s_obj, e2_in=t_obj,
+      expected_size=InputExample.ExpectedTextASize - 4)
+
+    expanded_terms = InputExample.__surround_ends_with_extra_char(
+      terms=cropped_text.Value,
+      e1_in=cropped_text.StartIndex,
+      e2_in=cropped_text.EndIndex)
+
+    return InputExample.WORD_SEP.join(expanded_terms)
+
+  @staticmethod
+  def __surround_ends_with_extra_char(terms, e1_in, e2_in):
+    """ Replacing ends in order to find them later, after tokenization
+    """
+    assert(isinstance(terms, list))
+    assert(isinstance(e1_in, int))
+    assert(isinstance(e2_in, int))
+
     result = []
-    for i, term in enumerate(data):
-      if i == s_obj or i == t_obj:
+    for term_index, term in enumerate(terms):
+      if term_index == e1_in or term_index == e2_in:
         result.append(InputExample.SEP)
         result.append(term)
         result.append(InputExample.SEP)
       else:
         result.append(term)
 
-
-    r = InputExample.WORD_SEP.join(result)
-    print(r)
-    return r
+    return result
 
