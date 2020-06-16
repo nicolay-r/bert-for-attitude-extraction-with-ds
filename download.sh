@@ -7,5 +7,6 @@ cd ./$subdir/ && unzip $fzip -d .
 
 # Loading data
 data=data.zip
-curl -L -o $data https://www.dropbox.com/s/fue4rtzg2osmo0u/bert-rusentrel-data.zip?dl=1
+# no-cv data
+curl -L -o $data https://www.dropbox.com/s/dp72c00zqd3b87u/bert-train-fixed-data.zip?dl=1
 unzip $data -d .
