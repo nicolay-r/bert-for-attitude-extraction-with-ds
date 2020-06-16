@@ -65,8 +65,6 @@ class SAE_2SM_Processor(DataProcessor):
                              t_obj=int(t_obj),
                              label=label))
 
-        random.shuffle(examples)
-
         return examples
 
 
@@ -131,8 +129,6 @@ class SAE_PB_Processor(DataProcessor):
                              t_obj=int(t_obj),
                              label=label))
 
-        random.shuffle(examples)
-
         return examples
 
 
@@ -190,8 +186,6 @@ class SAE_2PM_Processor(DataProcessor):
                              s_obj=int(s_obj),
                              t_obj=int(t_obj),
                              label=label))
-
-        random.shuffle(examples)
 
         return examples
 
