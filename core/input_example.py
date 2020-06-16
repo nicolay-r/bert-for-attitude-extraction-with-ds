@@ -40,14 +40,6 @@ class InputExample(object):
       vector=terms, e1_in=s_obj, e2_in=t_obj,
       expected_size=InputExample.ExpectedTextASize - 4)
 
-    print(text)
-    print(s_obj)
-    print(t_obj)
-
-    print(cropped_text.Value)
-    print(cropped_text.StartIndex)
-    print(cropped_text.EndIndex)
-
     expanded_terms = InputExample.__surround_ends_with_extra_char(
       terms=cropped_text.Value,
       e1_in=cropped_text.StartIndex,
