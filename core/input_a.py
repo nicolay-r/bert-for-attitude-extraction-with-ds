@@ -33,8 +33,8 @@ class ContextCropService:
                              end=end_index)
 
       return cls(value_vector=value_modified,
-                 start_index=start_index,
-                 end_index=end_index)
+                 start_index=e1_in - start_index,
+                 end_index=e2_in - start_index)
 
     # region properties
 

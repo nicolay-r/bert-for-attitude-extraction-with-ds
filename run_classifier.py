@@ -27,7 +27,7 @@ import tensorflow as tf
 
 import utils
 from core.input_example import InputExample
-from sae.processors import SAE_3SM_Processor, SAE_PB_Processor, SAE_3PM_Processor
+from sae.processors import SAE_2SM_Processor, SAE_PB_Processor, SAE_2PM_Processor, SAE_3SM_Processor, SAE_3PM_Processor
 from utils import __abs_nearest_dist
 
 flags = tf.flags
@@ -602,9 +602,11 @@ def main(_):
   tf.logging.set_verbosity(tf.logging.INFO)
 
   processors = {
+      "sae-2sm": SAE_2SM_Processor,
       "sae-3sm": SAE_3SM_Processor,
       "sae-pb": SAE_PB_Processor,
-      "sae-3pm": SAE_3PM_Processor,
+      "sae-2pm": SAE_2PM_Processor,
+      "sae-3pm": SAE_3PM_Processor
   }
 
   tokenization.validate_case_matches_checkpoint(FLAGS.do_lower_case,

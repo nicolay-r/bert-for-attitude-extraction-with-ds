@@ -10,13 +10,13 @@ from core.input_example import InputExample
 flags = tf.flags
 FLAGS = flags.FLAGS
 
-filename_template = "samples-{data_type}-{cv_index}.tsv.gz"
+filename_template = "sample-{data_type}-{cv_index}.tsv.gz"
 
 
-class SAE_3SM_Processor(DataProcessor):
+class SAE_2SM_Processor(DataProcessor):
     """Processor for the SAE data set, three scale classification format
        SAE stands for "Sentiment Attitude Extraction
-       3 -- Three scale
+       2 -- Three scale
        S -- Single sentence (text_a only)
        M -- multiple classification
        Columns:
@@ -37,7 +37,7 @@ class SAE_3SM_Processor(DataProcessor):
 
     def get_labels(self):
         """See base class."""
-        return ["0", "1", "2"]
+        return ["0", "1"]
 
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""
@@ -68,6 +68,13 @@ class SAE_3SM_Processor(DataProcessor):
         random.shuffle(examples)
 
         return examples
+
+
+class SAE_3SM_Processor(SAE_2SM_Processor):
+
+    def get_labels(self):
+        """See base class."""
+        return ["0", "1", "2"]
 
 
 class SAE_PB_Processor(DataProcessor):
@@ -129,10 +136,10 @@ class SAE_PB_Processor(DataProcessor):
         return examples
 
 
-class SAE_3PM_Processor(DataProcessor):
+class SAE_2PM_Processor(DataProcessor):
     """Processor for the SAE data set, three scale classification format
        SAE stands for "Sentiment Attitude Extraction
-       3 -- Three scale
+       2 -- Three scale
        P -- Pair of sentences (text_a, text_b)
        M -- Multiple classification
        Columns:
@@ -154,7 +161,7 @@ class SAE_3PM_Processor(DataProcessor):
 
     def get_labels(self):
         """See base class."""
-        return ["0", "1", "2"]
+        return ["0", "1"]
 
     def _create_examples(self, lines, set_type):
         """Creates examples for the training and dev sets."""
@@ -187,3 +194,10 @@ class SAE_3PM_Processor(DataProcessor):
         random.shuffle(examples)
 
         return examples
+
+
+class SAE_3PM_Processor(SAE_2PM_Processor):
+
+    def get_labels(self):
+        """See base class."""
+        return ["0", "1", "2"]
