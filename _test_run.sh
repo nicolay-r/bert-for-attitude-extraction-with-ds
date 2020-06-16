@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source _models.sh
+
 for i in $m1; do
 
     OLDIFS=$IFS
