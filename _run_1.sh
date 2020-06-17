@@ -7,7 +7,11 @@
 
 source _models.sh
 
+echo "Configurations to be tested:"
+echo $s1
+
 for i in $s1; do
+
 
     OLDIFS=$IFS
     IFS=','

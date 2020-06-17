@@ -21,7 +21,13 @@ echo TASK: $task_name
 
 
 terms_per_context=250
-batch_size=12
+
+############################################
+# Considering such parameters for 8GB of RAM
+############################################
+batch_size=4
+############################################
+
 epochs=30.0
 m_root="./pretrained/multi_cased_L-12_H-768_A-12"
 do_lowercasing=False
@@ -34,6 +40,8 @@ predict_file_name=test_results.tsv
 cv_count=1
 if [[$folder == "cv-*"]]; then
     cv_count=3;
+    echo "Rinning in Cross-Validation Mode"
+    echo "cv_count = "$cv_count
 fi
 
 i=0
