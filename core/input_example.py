@@ -22,6 +22,11 @@ class InputExample(object):
       label: (Optional) string. The label of the example. This should be
         specified for train and dev examples, but not for test examples.
     """
+
+    text_a = self.__optionally_fix_quoted_text(text_a)
+    if text_b is not None:
+        text_b = self.__optionally_fix_quoted_text(text_b)
+
     self.guid = guid
     self.text_a = InputExample.__process_text_a(text=text_a, s_obj=s_obj, t_obj=t_obj)
     self.text_b = text_b
@@ -44,6 +49,12 @@ class InputExample(object):
       e2_in=cropped_text.EndIndex)
 
     return InputExample.WORD_SEP.join(expanded_terms)
+
+  @staticmethod
+  def __optionally_fix_quoted_text(text):
+    if text[0] == text[-1] == '"':
+      text = text[1:-1].replace('""', '"')
+    return text
 
   @staticmethod
   def __surround_ends_with_extra_char(terms, e1_in, e2_in):

@@ -30,7 +30,7 @@ elif [[ $1 == test ]] ; then
     card_index=0
 fi
 
-echo "Configurations to be tested:" $s1
+echo "Configurations to be tested:" $list
 
 for i in $list; do
 
