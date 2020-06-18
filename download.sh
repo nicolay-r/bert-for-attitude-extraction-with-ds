@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Loading model
 fzip=multi_cased_L-12_H-768_A-12.zip
 subdir=pretrained
