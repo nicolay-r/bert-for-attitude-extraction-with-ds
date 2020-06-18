@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ###############################################
 # Setup Parameters
 # The output folder depends on the DEVICE INDEX.
@@ -10,13 +10,13 @@
 
 # Reading arguments
 device_index=$1
-folder=$2
+model_folder=$2
 task_name=$3
 
 echo ---
 echo Running BERT task with the following parameters:
 echo DEVICE: $device_index
-echo DIR: $folder
+echo DIR: $model_folder
 echo TASK: $task_name
 
 
@@ -33,15 +33,17 @@ m_root="./pretrained/multi_cased_L-12_H-768_A-12"
 do_lowercasing=False
 use_custom_distance=True
 
-src=./data/$folder
+src=./data/$model_folder
 
 predict_file_name=test_results.tsv
 
 cv_count=1
-if [[$folder == "cv-*"]]; then
+if [[ $model_folder == "cv-"* ]]; then
     cv_count=3;
     echo "Rinning in Cross-Validation Mode"
-    echo "cv_count = "$cv_count
+    echo "CV Count: "$cv_count
+else
+    echo "Running in Fixed Mode"
 fi
 
 i=0
@@ -49,7 +51,7 @@ while [ "$i" -lt $cv_count ]; do
 
     cv_index=$i
 
-    echo $cv_index
+    echo "Current CV Index: "$cv_index
 
     out_dir=./bert_output-$device_index
     mkdir -p $out_dir
