@@ -14,15 +14,15 @@ source _models.sh
 
 list="-"
 card_index=$1
-if [[ $1 -eq 0 ]] ; then
+if [[ $1 == 0 ]] ; then
     list=$s1
-elif [[ $1 -eq 1 ]] ; then
+elif [[ $1 == 1 ]] ; then
     list=$s2
-elif [[ $1 -eq 2 ]] ; then
+elif [[ $1 == 2 ]] ; then
     list=$s3
-elif [[ $1 -eq 3 ]] ; then
+elif [[ $1 == 3 ]] ; then
     list=$s4
-elif [[ $1 -eq all ]] ; then
+elif [[ $1 == all ]] ; then
     list=$models_list
     card_index=0
 fi
