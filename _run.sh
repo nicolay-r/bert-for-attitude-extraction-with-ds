@@ -6,7 +6,7 @@
 ########################################
 
 if [ $# -ne 1 ]; then
-    echo "No arguments supplied"
+    echo "Usage ./_run.sh <CARD_ID>|all|test"
     exit
 fi
 
@@ -24,6 +24,9 @@ elif [[ $1 == 3 ]] ; then
     list=$s4
 elif [[ $1 == all ]] ; then
     list=$models_list
+    card_index=0
+elif [[ $1 == test ]] ; then
+    list=$m1
     card_index=0
 fi
 
