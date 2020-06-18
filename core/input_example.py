@@ -34,11 +34,9 @@ class InputExample(object):
 
     terms = text.strip().split(InputExample.WORD_SEP)
 
-    # We substract 4 in order to organize a placeholder for extra chars,
-    # which surrounds object and subject
     cropped_text = ContextCropService.fit_context_vector(
       vector=terms, e1_in=s_obj, e2_in=t_obj,
-      expected_size=InputExample.ExpectedTextASize - 4)
+      expected_size=InputExample.ExpectedTextASize)
 
     expanded_terms = InputExample.__surround_ends_with_extra_char(
       terms=cropped_text.Value,
