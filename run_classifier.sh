@@ -71,8 +71,10 @@ while [ "$i" -lt $cv_count ]; do
         --do_lower_case=$do_lowercasing \
         --save_checkpoints_steps 10000
 
-    # # Copy result file
-    # cp $out_dir/$predict_file_name $src/result-test-$cv_index.csv
+    # Copy result file
+    out=./bert-model-results/$model_folder
+    mkdir -p $out
+    cp $out_dir/$predict_file_name $out/result-test-$cv_index.csv
 
     i=$(( i + 1 ))
 done
