@@ -20,18 +20,18 @@ echo DIR: $model_folder
 echo TASK: $task_name
 
 
-terms_per_context=250
+terms_per_context=50
 
 ############################################
 # Considering such parameters for 8GB of RAM
 ############################################
-batch_size=4
+batch_size=32
 ############################################
 
 epochs=30.0
 m_root="./pretrained/multi_cased_L-12_H-768_A-12"
 do_lowercasing=False
-use_custom_distance=True
+use_custom_distance=False
 
 src=./data/$model_folder
 
@@ -51,11 +51,29 @@ while [ "$i" -lt $cv_count ]; do
 
     cv_index=$i
 
-    echo "Current CV Index: "$cv_index
-
     out_dir=./bert_output-$device_index
     mkdir -p $out_dir
     rm -rf $out_dir/*
+
+    valid=1
+    for data_type in "train" "test"; do
+        input_template="sample-"$data_type"-"$cv_index".tsv.gz"
+        input_file=$src/$input_template
+
+        if [ ! -f $input_file ]; then
+            valid=0
+            echo $input_file "[Missed]"
+        else
+            echo $input_file "[OK]"
+        fi
+    done
+
+    echo "Valid: "$valid
+    if [ ! $valid -eq 1 ]; then
+        break
+    fi
+
+    echo "Current CV Index: "$cv_index
 
     CUDA_VISIBLE_DEVICES=$device_index python3.6 run_classifier.py \
         --use_custom_distance=$use_custom_distance \
@@ -71,10 +89,27 @@ while [ "$i" -lt $cv_count ]; do
         --do_lower_case=$do_lowercasing \
         --save_checkpoints_steps 10000
 
-    # Copy result file
-    out=./bert-model-results/$model_folder
-    mkdir -p $out
-    cp $out_dir/$predict_file_name $out/result-test-$cv_index.csv
+    # Create output folder
+    result_out=./bert-model-results/$model_folder
+    mkdir -p $result_out
+
+    out_template="result-test-"$cv_index".csv"
+    source_file=$out_dir/$predict_file_name
+    target_file=$result_out/$out_template
+
+    if [ ! -f $source_file ]; then
+       echo "Source result file does not exists: "$source_file
+       echo "Skipping copy ..."
+    fi
+
+    if [ -f $target_file ]; then
+       echo "Target file already exists: "$target_file
+       echo "Skipping copy ..."
+       break
+    fi
+
+    # Copy results
+    cp $source_file $target_file
 
     i=$(( i + 1 ))
 done
