@@ -40,7 +40,7 @@ predict_file_name=test_results.tsv
 cv_count=1
 if [[ $model_folder == "cv-"* ]]; then
     cv_count=3;
-    echo "Rinning in Cross-Validation Mode"
+    echo "Running in Cross-Validation Mode"
     echo "CV Count: "$cv_count
 else
     echo "Running in Fixed Mode"
@@ -79,7 +79,9 @@ while [ "$i" -lt $cv_count ]; do
         --use_custom_distance=$use_custom_distance \
         --task_name=$task_name \
         --cv_index=$cv_index \
-        --do_predict=true --do_train=true \
+        --do_predict=true \
+        --do_eval=true \
+        --do_train=true \
         --data_dir=$src --vocab_file=$m_root/vocab.txt \
         --bert_config_file=$m_root/bert_config.json \
         --init_checkpoint=$m_root/bert_model.ckpt \
@@ -112,5 +114,7 @@ while [ "$i" -lt $cv_count ]; do
     cp $source_file $target_file
 
     i=$(( i + 1 ))
+
+    echo "OK"
 done
 
