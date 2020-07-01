@@ -29,6 +29,9 @@ class SAE_2SM_Processor(DataProcessor):
         filename = filename_template.format(data_type='train', cv_index=FLAGS.cv_index)
         return self._create_examples(self._read_tsv_gzip(os.path.join(data_dir, filename)), "train")
 
+    def get_dev_examples(self, data_dir):
+        return self.get_test_examples(data_dir)
+
     def get_test_examples(self, data_dir):
         """See base class."""
         filename = filename_template.format(data_type='test', cv_index=FLAGS.cv_index)
@@ -91,6 +94,9 @@ class SAE_PB_Processor(DataProcessor):
         return self._create_examples(
             self._read_tsv_gzip(os.path.join(data_dir, filename)), "train")
 
+    def get_dev_examples(self, data_dir):
+        return self.get_test_examples(data_dir)
+
     def get_test_examples(self, data_dir):
         """See base class."""
         filename = filename_template.format(data_type='test', cv_index=FLAGS.cv_index)
@@ -148,6 +154,9 @@ class SAE_2PM_Processor(DataProcessor):
         filename = filename_template.format(data_type='train', cv_index=FLAGS.cv_index)
         return self._create_examples(
             self._read_tsv_gzip(os.path.join(data_dir, filename)), "train")
+
+    def get_dev_examples(self, data_dir):
+        return self.get_test_examples(data_dir)
 
     def get_test_examples(self, data_dir):
         """See base class."""
