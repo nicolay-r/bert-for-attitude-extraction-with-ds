@@ -5,29 +5,31 @@
 # ./_run.sh <CARD_INDEX>|all
 ########################################
 
-if [ $# -ne 1 ]; then
-    echo "Usage ./_run.sh <CARD_ID>|all|test"
+if [ $# -lt 1 ]; then
+    echo "Usage ./_run.sh <CARD_ID>|all|test <CARDS_COUNT>"
     exit
 fi
 
-source _models.sh
+card_index=$1
+
+if [ $# -lt 2 ]; then
+    cards_count=1
+else
+    cards_count=$2
+fi
+
+source _models.sh $cards_count
 
 list="-"
-card_index=$1
-if [[ $1 == 0 ]] ; then
-    list=$s1
-elif [[ $1 == 1 ]] ; then
-    list=$s2
-elif [[ $1 == 2 ]] ; then
-    list=$s3
-elif [[ $1 == 3 ]] ; then
-    list=$s4
-elif [[ $1 == all ]] ; then
-    list=$models_list
+
+if [[ $card_index == all ]] ; then
+    list="${modes_per_card[0]}"
     card_index=0
-elif [[ $1 == test ]] ; then
-    list=$m1
+elif [[ $card_index == test ]] ; then
+    list="${modes_per_card[0]}"
     card_index=0
+else
+    list="${modes_per_card[$card_index]}"
 fi
 
 echo "Configurations to be tested:" $list

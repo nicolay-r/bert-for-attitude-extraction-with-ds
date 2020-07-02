@@ -1,23 +1,46 @@
 #!/bin/bash
 
-# iter by labels
-for label in '2' '3'; do
+if [ $# -ne 1 ]; then
+    echo "Usage ./_models.sh <CARDS_COUNT>"
+    exit
+fi
 
-    m1="bert-c_m-"$label"l,sae-"$label"sm"
-    m2="bert-nli_b-"$label"l,sae-pb"
-    m3="bert-qa_b-"$label"l,sae-pb"
-    m4="bert-qa_m-"$label"l,sae-"$label"pm"
+label_modes=('2' '3')
+test_modes=('' 'cv-')
+train_modes=('' 'ds-')
 
-    # iter by prefixes
-    for test_modes in '' 'cv-'; do
-        for train_modes in '' 'ds-'; do
-            s1="$s1 $test_modes$train_modes$m1"
-            s2="$s2 $test_modes$train_modes$m2"
-            s3="$s3 $test_modes$train_modes$m3"
-            s4="$s4 $test_modes$train_modes$m4"
-        done;
-    done;
+cards_count=$1
 
-done;
 
-models_list="$s1 $s2 $s3 $s4"
+all_modes=()
+for label in "${label_modes[@]}"; do
+    for cfg in "bert-c_m-"$label"l,sae-"$label"sm" \
+               "bert-nli_b-"$label"l,sae-pb" \
+               "bert-qa_b-"$label"l,sae-pb" \
+               "bert-qa_m-"$label"l,sae-"$label"pm"
+    do
+        for test_mode in "${test_modes[@]}"; do
+            for train_mode in "${train_modes[@]}"; do
+                all_modes+=($test_mode$train_mode$cfg)
+            done
+        done
+    done
+done
+
+modes_per_card=()
+for i in cards_count; do
+    modes_per_card=("")
+done
+
+m_ind=0
+for m in "${all_modes[@]}"; do
+    card_ind=$((m_ind%cards_count))
+    modes_per_card[card_ind]="${modes_per_card[$card_ind]} $m"
+    m_ind=$((m_ind+1))
+done
+
+echo "Elements count: ${#modes_per_card[*]}"
+echo "All modes"
+for m in "${modes_per_card[@]}"; do
+    echo $m
+done
