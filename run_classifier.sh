@@ -20,7 +20,7 @@ echo DIR: $model_folder
 echo TASK: $task_name
 
 
-terms_per_context=50
+tokens_per_context=50
 
 ############################################
 # Considering such parameters for 8GB of RAM
@@ -85,8 +85,10 @@ while [ "$i" -lt $cv_count ]; do
         --data_dir=$src --vocab_file=$m_root/vocab.txt \
         --bert_config_file=$m_root/bert_config.json \
         --init_checkpoint=$m_root/bert_model.ckpt \
-        --max_seq_length=$terms_per_context --train_batch_size=$batch_size \
-        --learning_rate=2e-5 --num_train_epochs=$epochs \
+        --max_seq_length=$tokens_per_context --train_batch_size=$batch_size \
+        --learning_rate=2e-5 \
+        --warmup_proportion=0.1 \
+        --num_train_epochs=$epochs \
         --output_dir=$out_dir \
         --do_lower_case=$do_lowercasing \
         --save_checkpoints_steps 10000
