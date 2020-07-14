@@ -1,4 +1,9 @@
 from core.input_a import ContextCropService
+import tensorflow as tf
+
+
+flags = tf.flags
+FLAGS = flags.FLAGS
 
 
 class InputExample(object):
@@ -6,7 +11,6 @@ class InputExample(object):
 
   SEP = "#"
   WORD_SEP = " "
-  ExpectedTextASize = 50
   OBJ_MASK = "O"
   SUBJ_MASK = "S"
 
@@ -41,7 +45,7 @@ class InputExample(object):
 
     cropped_text = ContextCropService.fit_context_vector(
       vector=terms, e1_in=s_obj, e2_in=t_obj,
-      expected_size=InputExample.ExpectedTextASize)
+      expected_size=FLAGS.max_seq_length)
 
     expanded_terms = InputExample.__surround_ends_with_extra_char(
       terms=cropped_text.Value,
