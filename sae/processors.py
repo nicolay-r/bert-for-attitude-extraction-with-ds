@@ -12,6 +12,10 @@ FLAGS = flags.FLAGS
 
 filename_template = "sample-{data_type}-{cv_index}.tsv.gz"
 
+# Mix of the origininal data, as the latter in case of 'train' type
+# mostly represents a sequence of a zero labeled examples.
+RANDOM_SEED = 1
+
 
 class SAE_2SM_Processor(DataProcessor):
     """Processor for the SAE data set, three scale classification format
@@ -67,6 +71,9 @@ class SAE_2SM_Processor(DataProcessor):
                              s_obj=int(s_obj),
                              t_obj=int(t_obj),
                              label=label))
+
+        if set_type == "train":
+            random.Random(RANDOM_SEED).shuffle(examples)
 
         return examples
 
@@ -135,6 +142,9 @@ class SAE_PB_Processor(DataProcessor):
                              t_obj=int(t_obj),
                              label=label))
 
+        if set_type == "train":
+            random.Random(RANDOM_SEED).shuffle(examples)
+
         return examples
 
 
@@ -195,6 +205,9 @@ class SAE_2PM_Processor(DataProcessor):
                              s_obj=int(s_obj),
                              t_obj=int(t_obj),
                              label=label))
+
+        if set_type == "train":
+            random.Random(RANDOM_SEED).shuffle(examples)
 
         return examples
 
