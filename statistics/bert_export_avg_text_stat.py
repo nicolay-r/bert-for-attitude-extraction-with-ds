@@ -2,27 +2,30 @@ import tokenization
 from statistics.utils import assess_for_text, TextTypes
 
 
-def assess(filenames, text_processing_func):
+def assess(filenames, text_processing_func, text_types):
     assert(isinstance(filenames, list))
     assert(callable(text_processing_func))
+    assert(isinstance(text_types, list))
 
     total_items = 0
     total_samples = 0
+
     for filename in filenames:
         print "-----------------------------"
         print "Filename: {}".format(filename)
 
-        for ttype in [TextTypes.TextA, TextTypes.TextB]:
-            items, samples, d_type = assess_for_text(filename=filename,
-                                                     text_processing_func=text_processing_func,
-                                                     ttype=ttype)
+        samples_count = 0
+        for ttype in text_types:
+            items, samples_count, d_type = assess_for_text(filename=filename,
+                                                           text_processing_func=text_processing_func,
+                                                           ttype=ttype)
             print "Data type: {}".format(d_type)
-            print "Samples taken: {}".format(samples)
-            print "{} (items per sample): {}".format(ttype, round(float(items) / samples, 2))
+            print "Samples taken: {}".format(samples_count)
+            print "{} (items per sample): {}".format(ttype, round(float(items) / samples_count, 2))
 
             total_items += items
 
-        total_samples += samples
+        total_samples += samples_count
 
     print "-----------------------------"
     print "TOTAL:"
@@ -32,15 +35,18 @@ def assess(filenames, text_processing_func):
 
 if __name__ == "__main__":
 
-    filenames = ["../data/ds-bert-qa_b-3l/sample-train-0.tsv.gz",
-                 "../data/ds-bert-qa_b-3l/sample-test-0.tsv.gz"]
+    filenames = ["../data/ds-bert-nli_b-3l/sample-train-0.tsv.gz",
+                 "../data/ds-bert-nli_b-3l/sample-test-0.tsv.gz"]
+
+    text_types = [TextTypes.TextA, TextTypes.TextB]
 
     print("")
     print("FOR TERMS:")
 
     # Assess with terms
     assess(filenames=filenames,
-           text_processing_func=lambda text: text.split(' '))
+           text_processing_func=lambda text: text.split(' '),
+           text_types=text_types)
 
     # Assess with tokenized terms
     tokenizer = tokenization.FullTokenizer(
@@ -51,4 +57,5 @@ if __name__ == "__main__":
     print("FOR TOKENS:")
 
     assess(filenames=filenames,
-           text_processing_func=lambda text: tokenizer.tokenize(text))
+           text_processing_func=lambda text: tokenizer.tokenize(text),
+           text_types=text_types)

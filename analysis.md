@@ -1,60 +1,26 @@
 # Input length analysis
 
 * Considering TRAIN/TEST fixed separation.
+* Measuring for 3-scale.
 * Analyzing `text_a` + `text_b` lengths
 * Calculating for:
     * TRAIN;
     * TEST;
     * TOTAL (Average)
-* Text + Question/Answering format (see log below): 
+
+Results:
+* Text_A only:
+    * Terms: 22.04 
+    * Tokens: 36.92
+* Text_B (QA_B):
+    * Terms: 17.7
+    * Tokens: 33.32
+* Text_B (NLI_B):
+    * Terms: 15.7
+    * Tokens: 29.32
+
+Therefore, a combinations (largest):
+* Text + Text_B (QA):
     * Terms: ~39.7
-    * Tokens: ~70
-    
-Terms:
-```
-    FOR TERMS:
-    -----------------------------
-    Filename: ../data/ds-bert-qa_b-3l/sample-train-0.tsv.gz
-    Data type: train
-    Samples taken: 75709
-    TextTypes.TextA (items per sample): 21.08
-    Data type: train
-    Samples taken: 75709
-    TextTypes.TextB (items per sample): 17.7
-    -----------------------------
-    Filename: ../data/ds-bert-qa_b-3l/sample-test-0.tsv.gz
-    Data type: test
-    Samples taken: 8466
-    TextTypes.TextA (items per sample): 30.65
-    Data type: test
-    Samples taken: 8466
-    TextTypes.TextB (items per sample): 17.75
-    -----------------------------
-    TOTAL:
-    Samples taken: 84175
-    Items per sample: 39.74
-```
-Tokens:
-```
-    FOR TOKENS:
-    -----------------------------
-    Filename: ../data/ds-bert-qa_b-3l/sample-train-0.tsv.gz
-    Data type: train
-    Samples taken: 75709
-    TextTypes.TextA (items per sample): 35.61
-    Data type: train
-    Samples taken: 75709
-    TextTypes.TextB (items per sample): 33.48
-    -----------------------------
-    Filename: ../data/ds-bert-qa_b-3l/sample-test-0.tsv.gz
-    Data type: test
-    Samples taken: 8466
-    TextTypes.TextA (items per sample): 48.65
-    Data type: test
-    Samples taken: 8466
-    TextTypes.TextB (items per sample): 31.89
-    -----------------------------
-    TOTAL:
-    Samples taken: 84175
-    Items per sample: 70.23
-```
+    * Tokens: **~70**
+
