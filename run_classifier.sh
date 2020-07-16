@@ -20,12 +20,12 @@ echo DIR: $model_folder
 echo TASK: $task_name
 
 
-tokens_per_context=50
+tokens_per_context=128
 
 ############################################
 # Considering such parameters for 8GB of RAM
 ############################################
-batch_size=32
+batch_size=16
 ############################################
 
 epochs=30.0
