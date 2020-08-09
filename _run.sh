@@ -7,6 +7,9 @@
 
 if [ $# -lt 1 ]; then
     echo "Usage ./_run.sh <CARD_ID>|all|test <CARDS_COUNT>"
+    echo "IMPORTANT: <CARD_ID> <= <CARDS_COUNT>"
+    echo "Example of how to run in 'nohup' mode:"
+    echo "nohup ./_run.sh 0 4 &> log_card_0.txt &"
     exit
 fi
 
