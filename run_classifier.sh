@@ -114,9 +114,10 @@ while [ "$i" -lt $cv_count ]; do
 
     # Copy results
     cp $source_file $target_file
+    echo "Copy results to: "$target_file
 
     i=$(( i + 1 ))
 
-    echo "OK"
+    echo "Model train and evaluation at cv_index="$i" completed!"
 done
 
