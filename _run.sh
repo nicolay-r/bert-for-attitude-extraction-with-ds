@@ -6,33 +6,34 @@
 ########################################
 
 if [ $# -lt 1 ]; then
-    echo "Usage ./_run.sh <CARD_ID>|all|test <CARDS_COUNT>"
+    echo "Usage ./_run.sh <CARD_ID> all|test|[<PART_INDEX> <PARTS_COUNT>]"
     echo "IMPORTANT: <CARD_ID> <= <CARDS_COUNT>"
-    echo "Example of how to run in 'nohup' mode:"
-    echo "nohup ./_run.sh 0 4 &> log_card_0.txt &"
+    echo "Example of how to run on card#1, part0 out of 4, in 'nohup' mode:"
+    echo "nohup ./_run.sh 1 0 4 &> log_card_0.txt &"
     exit
 fi
 
 card_index=$1
 
 if [ $# -lt 2 ]; then
-    cards_count=1
+    parts_count=1
 else
-    cards_count=$2
+    part_index=$2
+    parts_count=$3
 fi
 
-source _models.sh $cards_count
+source _models.sh $parts_count
 
 list="-"
 
-if [[ $card_index == all ]] ; then
+if [[ $part_index == all ]] ; then
     list="${modes_per_card[0]}"
-    card_index=0
-elif [[ $card_index == test ]] ; then
+    part_index=0
+elif [[ $part_index == test ]] ; then
     list="${modes_per_card[0]}"
-    card_index=0
+    part_index=0
 else
-    list="${modes_per_card[$card_index]}"
+    list="${modes_per_card[$part_index]}"
 fi
 
 echo "Configurations to be tested:" $list
