@@ -96,14 +96,16 @@ while [ "$it_index" -lt $cv_count ]; do
           --do_eval=true \
           --do_train=true \
           --data_dir=$src \
-	  --vocab_file=$m_root/vocab.txt \
+          --vocab_file=$m_root/vocab.txt \
           --bert_config_file=$m_root/bert_config.json \
           --init_checkpoint=$m_root/bert_model.ckpt \
-          --max_seq_length=$tokens_per_context --train_batch_size=$batch_size \
+          --max_seq_length=$tokens_per_context \
+          --train_batch_size=$batch_size \
           --learning_rate=2e-5 \
           --warmup_proportion=0.1 \
           --num_train_epochs=$train_epochs_step \
-          --output_dir=$src \
+          --output_dir=$out_dir \
+          --results_dir=$src \
           --do_lower_case=$do_lowercasing \
           --save_checkpoints_steps 10000
 

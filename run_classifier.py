@@ -54,6 +54,10 @@ flags.DEFINE_string(
     "output_dir", None,
     "The output directory where the model checkpoints will be written.")
 
+flags.DEFINE_string(
+    "results_dir", None,
+    "The output directory where the predicted results will be written.")
+
 ## Other parameters
 
 flags.DEFINE_string(
@@ -790,7 +794,7 @@ def main(_):
         stage_index=FLAGS.stage_index,
         state=FLAGS.predefined_state_name)
 
-    output_predict_file = os.path.join(FLAGS.output_dir, predict_filepath)
+    output_predict_file = os.path.join(FLAGS.results_dir, predict_filepath)
 
     with tf.gfile.GFile(output_predict_file, "w") as writer:
       num_written_lines = 0
@@ -816,4 +820,5 @@ if __name__ == "__main__":
   flags.mark_flag_as_required("vocab_file")
   flags.mark_flag_as_required("bert_config_file")
   flags.mark_flag_as_required("output_dir")
+  flags.mark_flag_as_required("results_dir")
   tf.app.run()
