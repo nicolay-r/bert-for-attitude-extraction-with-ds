@@ -91,7 +91,7 @@ while [ "$it_index" -lt $cv_count ]; do
           --task_name=$task_name \
           --cv_index=$it_index \
           --stage_index=$((train_stage * train_epochs_step)) \
-          --state_name=$predefined_state_name \
+          --predefined_state_name=$predefined_state_name \
           --do_predict=true \
           --do_eval=true \
           --do_train=true \
