@@ -6,13 +6,15 @@
 ########################################
 
 if [ $# -lt 1 ]; then
-    echo "Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r <ROOT_DIR> -c"
+    echo "Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r "
+    echo "  <ROOT_DIR> -c <CV_COUNT> -b <BATCH_SIZE>"
     echo "------"
     echo "-g: index of the GPU to be utilized in experiments."
     echo "-p: part index to be used in a whole list of models as a payload"
     echo "-l: labels count to utilized"
     echo "-d: root dir that contains serialized models"
-    echo "-C: cv_count"
+    echo "-c: cv_count"
+    echo "-b: batch size"
     echo "------"
     echo "NOTE: <PART_INDEX> < <TOTAL_PARTS_COUNT>"
     echo "------"
@@ -23,7 +25,7 @@ if [ $# -lt 1 ]; then
 fi
 
 # Reading parameters using `getops` util.
-while getopts ":g:p:t:l:r:c:" opt; do
+while getopts ":g:p:t:l:r:c:b:" opt; do
   case $opt in
     g) card_index="$OPTARG"
       echo "GPU# utilized = $card_index"
@@ -54,6 +56,9 @@ while getopts ":g:p:t:l:r:c:" opt; do
           echo "cv_count to be either 1 or 3, $cv_count found instead."
           exit 1
       fi
+      ;;
+    b) batch_size="$OPTARG"
+      echo "batch_size = $batch_size"
       ;;
     \?) echo "Invalid option -$OPTARG" >&2
       ;;
@@ -96,8 +101,11 @@ for i in $list; do
     # in it.
     target="${root_dir}${model_folder}"
 
-    # Starting training and evaluation process.
-    ./_run_classifier.sh -g $card_index -s $target -t $task_name -c $cv_count
+    if [ -d $target ]; then
+      # Starting training and evaluation process.
+      echo $task_name
+      ./_run_classifier.sh -g $card_index -s $target -t $task_name -c $cv_count -b $batch_size
+    fi
 
 done;
 

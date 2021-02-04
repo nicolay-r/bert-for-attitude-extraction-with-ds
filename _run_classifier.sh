@@ -7,26 +7,6 @@
 echo "---"
 echo "Running BERT task with the following parameters:"
 
-# Reading parameters using `getops` util.
-while getopts ":g:s:t:c:" opt; do
-  case $opt in
-    g) device_index="$OPTARG"
-    echo "DEVICE (GPU#) = $device_index"
-    ;;
-    s) src="$OPTARG"
-    echo "DIR (model_folder) = $src"
-    ;;
-    s) task_name="$OPTARG"
-    echo "TASK (task_name) = $task_name"
-    ;;
-    c) cv_count="$OPTARG"
-    echo "CV_COUNT (cv_count) = $cv_count"
-    ;;
-    \?) echo "Invalid option -$OPTARG" >&2
-    ;;
-  esac
-done
-
 ############################################
 # Considering such parameters for 8GB of RAM
 ############################################
@@ -37,6 +17,29 @@ m_root="./pretrained/multi_cased_L-12_H-768_A-12"
 do_lowercasing=False
 use_custom_distance=False
 ############################################
+
+# Reading parameters using `getops` util.
+while getopts ":g:s:t:c:b:" opt; do
+  case $opt in
+    g) device_index="$OPTARG"
+    echo "DEVICE (GPU#) = $device_index"
+    ;;
+    s) src="$OPTARG"
+    echo "DIR (model_folder) = $src"
+    ;;
+    t) task_name="$OPTARG"
+    echo "TASK (task_name) = $task_name"
+    ;;
+    c) cv_count="$OPTARG"
+    echo "CV_COUNT (cv_count) = $cv_count"
+    ;;
+    b) batch_size="$OPTARG"
+    echo "batch_size = $batch_size"
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
 
 i=0
 while [ "$i" -lt $cv_count ]; do
@@ -67,6 +70,8 @@ while [ "$i" -lt $cv_count ]; do
 
     echo "Current CV Index: "$cv_index
 
+    # We provide all the results withing the same source folder
+    # in order to later apply evaluation towards the obtained results.
     CUDA_VISIBLE_DEVICES=$device_index python3.6 run_classifier.py \
         --use_custom_distance=$use_custom_distance \
         --task_name=$task_name \
@@ -81,8 +86,6 @@ while [ "$i" -lt $cv_count ]; do
         --learning_rate=2e-5 \
         --warmup_proportion=0.1 \
         --num_train_epochs=$epochs \
-        # We provide all the results withing the same source folder
-        # in order to later apply evaluation towards the obtained results.
         --output_dir=$src \
         --do_lower_case=$do_lowercasing \
         --save_checkpoints_steps 10000

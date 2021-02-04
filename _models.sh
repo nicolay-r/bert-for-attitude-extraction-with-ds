@@ -19,13 +19,10 @@ done
 label_modes=($label)
 entity="sharp-simple"
 
-echo $cards_count
-
 all_modes=()
 for label in "${label_modes[@]}"; do
     for cfg in "bert-c_m-"$entity"-"$label"l,sae-"$label"sm" \
-               "bert-nli_b-"$entity"-"$label"l,sae-pb" \
-               "bert-qa_b-"$entity"-"$label"l,sae-pb" \
+               "bert-nli_m-"$entity"-"$label"l,sae-"$label"pm" \
                "bert-qa_m-"$entity"-"$label"l,sae-"$label"pm"
     do
         all_modes+=($test_mode$train_mode$cfg)
@@ -45,7 +42,9 @@ for m in "${all_modes[@]}"; do
 done
 
 echo "Elements count: ${#modes_per_card[*]}"
-echo "All modes"
+echo "All modes:"
+echo "----------"
 for m in "${modes_per_card[@]}"; do
     echo $m
 done
+echo "----------"
