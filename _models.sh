@@ -1,29 +1,34 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
-    echo "Usage ./_models.sh <CARDS_COUNT>"
-    exit
-fi
+# Reading parameters using `getops` util.
+OPTIND=1
+while getopts ":c:l:" opt; do
+  case $opt in
+    c) cards_count="$OPTARG"
+    echo "cards_count = $cards_count"
+    ;;
+    l) label="$OPTARG"
+    echo "label = $label"
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
 
-label_modes=('2' '3')
-test_modes=('' 'cv-')
-train_modes=('' 'ds-')
+# Supported labels
+label_modes=($label)
+entity="sharp-simple"
 
-cards_count=$1
-
+echo $cards_count
 
 all_modes=()
 for label in "${label_modes[@]}"; do
-    for cfg in "bert-c_m-"$label"l,sae-"$label"sm" \
-               "bert-nli_b-"$label"l,sae-pb" \
-               "bert-qa_b-"$label"l,sae-pb" \
-               "bert-qa_m-"$label"l,sae-"$label"pm"
+    for cfg in "bert-c_m-"$entity"-"$label"l,sae-"$label"sm" \
+               "bert-nli_b-"$entity"-"$label"l,sae-pb" \
+               "bert-qa_b-"$entity"-"$label"l,sae-pb" \
+               "bert-qa_m-"$entity"-"$label"l,sae-"$label"pm"
     do
-        for test_mode in "${test_modes[@]}"; do
-            for train_mode in "${train_modes[@]}"; do
-                all_modes+=($test_mode$train_mode$cfg)
-            done
-        done
+        all_modes+=($test_mode$train_mode$cfg)
     done
 done
 
