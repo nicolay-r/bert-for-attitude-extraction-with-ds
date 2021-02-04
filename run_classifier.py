@@ -72,6 +72,8 @@ flags.DEFINE_bool(
 
 flags.DEFINE_integer("cv_index", 0, "Cross-validation index of the task.")
 
+flags.DEFINE_integer("stage_index", 0, "Training stage index")
+
 flags.DEFINE_integer(
     "max_seq_length", 128,
     "The maximum total input sequence length after WordPiece tokenization. "
@@ -781,8 +783,11 @@ def main(_):
 
     result = estimator.predict(input_fn=predict_input_fn)
 
-    output_predict_file = os.path.join(FLAGS.output_dir,
-                                       "test_results_{cv_index}.tsv".format(cv_index=FLAGS.cv_index))
+    predict_filepath = "test_results_i{cv_index}_e{stage_index}.tsv".format(cv_index=FLAGS.cv_index,
+                                                                            stage_index=FLAGS.stage_index)
+
+    output_predict_file = os.path.join(FLAGS.output_dir, predict_filepath)
+
     with tf.gfile.GFile(output_predict_file, "w") as writer:
       num_written_lines = 0
       tf.logging.info("***** Predict results *****")
@@ -802,6 +807,7 @@ if __name__ == "__main__":
   flags.mark_flag_as_required("data_dir")
   flags.mark_flag_as_required("task_name")
   flags.mark_flag_as_required("cv_index")
+  flags.mark_flag_as_required("stage_index")
   flags.mark_flag_as_required("vocab_file")
   flags.mark_flag_as_required("bert_config_file")
   flags.mark_flag_as_required("output_dir")

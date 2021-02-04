@@ -10,7 +10,9 @@ echo "Running BERT task with the following parameters:"
 ############################################
 # Considering such parameters for 8GB of RAM
 ############################################
-epochs=30.0
+train_epochs_step=5
+total_epochs=30
+train_stages=$((total_epochs / train_epochs_step))
 batch_size=16
 tokens_per_context=128
 m_root="./pretrained/multi_cased_L-12_H-768_A-12"
@@ -41,18 +43,19 @@ while getopts ":g:s:t:c:b:" opt; do
   esac
 done
 
-i=0
-while [ "$i" -lt $cv_count ]; do
 
-    cv_index=$i
+it_index=0
+# For every index, related to cv_count, do:
+while [ "$it_index" -lt $cv_count ]; do
 
+    # Clearing output directories.
     out_dir=./bert_output-$device_index
     mkdir -p $out_dir
     rm -rf $out_dir/*
 
     valid=1
     for data_type in "train" "test"; do
-        input_template="sample-"$data_type"-"$cv_index".tsv.gz"
+        input_template="sample-"$data_type"-"$it_index".tsv.gz"
         input_file=$src/$input_template
 
         if [ ! -f $input_file ]; then
@@ -68,34 +71,40 @@ while [ "$i" -lt $cv_count ]; do
         break
     fi
 
-    echo "Current CV Index: "$cv_index
+    echo "Current Iteration Index: "$it_index
 
-    # We provide all the results withing the same source folder
-    # in order to later apply evaluation towards the obtained results.
-    CUDA_VISIBLE_DEVICES=$device_index python3.6 run_classifier.py \
-        --use_custom_distance=$use_custom_distance \
-        --task_name=$task_name \
-        --cv_index=$cv_index \
-        --do_predict=true \
-        --do_eval=true \
-        --do_train=true \
-        --data_dir=$src --vocab_file=$m_root/vocab.txt \
-        --bert_config_file=$m_root/bert_config.json \
-        --init_checkpoint=$m_root/bert_model.ckpt \
-        --max_seq_length=$tokens_per_context --train_batch_size=$batch_size \
-        --learning_rate=2e-5 \
-        --warmup_proportion=0.1 \
-        --num_train_epochs=$epochs \
-        --output_dir=$src \
-        --do_lower_case=$do_lowercasing \
-        --save_checkpoints_steps 10000
+    train_stage=0
+    while [ "$train_stage" -lt $train_stages ]; do
 
-    # Create output folder
-    result_out=./bert-model-results/$model_folder
-    mkdir -p $result_out
+      # We provide all the results withing the same source folder
+      # in order to later apply evaluation towards the obtained results.
+      CUDA_VISIBLE_DEVICES=$device_index python3.6 run_classifier.py \
+          --use_custom_distance=$use_custom_distance \
+          --task_name=$task_name \
+          --cv_index=$it_index \
+          --stage_index=$((train_stage * train_epochs_step)) \
+          --do_predict=true \
+          --do_eval=true \
+          --do_train=true \
+          --data_dir=$src --vocab_file=$m_root/vocab.txt \
+          --bert_config_file=$m_root/bert_config.json \
+          --init_checkpoint=$m_root/bert_model.ckpt \
+          --max_seq_length=$tokens_per_context --train_batch_size=$batch_size \
+          --learning_rate=2e-5 \
+          --warmup_proportion=0.1 \
+          --num_train_epochs=$train_epochs_step \
+          --output_dir=$src \
+          --do_lower_case=$do_lowercasing \
+          --save_checkpoints_steps 10000
 
-    i=$(( i + 1 ))
+      # Moving to the next training stage.
+      train_stage=$(( train_stage + 1 ))
 
-    echo "Model train and evaluation at cv_index="$i" completed!"
+    done;
+
+    # Moving to the next training iteration.
+    it_index=$(( it_index + 1 ))
+
+    echo "Model train and evaluation at it_index="$it_index" completed!"
 done
 
