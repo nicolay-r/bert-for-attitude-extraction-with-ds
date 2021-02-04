@@ -88,17 +88,16 @@ echo "Configurations to be tested:" $list
 
 for i in $list; do
 
-    OLDIFS=$IFS
-    IFS=','
-
     # Split into the following args:
     # $1 -- model_folder,
     # $2 -- task_name
-    set -- $i;
+    model_folder=$(echo $i | cut -f1 -d,)
+    task_name=$(echo $i | cut -f2 -d,)
 
-    # local model_folder.
-    model_folder=$1
-    task_name=$2
+    echo "---------------"
+    echo $model_folder
+    echo $task_name
+    echo "---------------"
 
     # The result target path is a concatenation of the root directory
     # of the particular experiment and the related locat model derectory
