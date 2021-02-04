@@ -94,13 +94,8 @@ for i in $list; do
     model_folder=$(echo $i | cut -f1 -d,)
     task_name=$(echo $i | cut -f2 -d,)
 
-    echo "---------------"
-    echo $model_folder
-    echo $task_name
-    echo "---------------"
-
     # The result target path is a concatenation of the root directory
-    # of the particular experiment and the related locat model derectory
+    # of the particular experiment and the related local model directory
     # in it.
     target="${root_dir}${model_folder}"
 
