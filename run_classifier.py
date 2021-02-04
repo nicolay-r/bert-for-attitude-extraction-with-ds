@@ -74,7 +74,7 @@ flags.DEFINE_integer("cv_index", 0, "Cross-validation index of the task.")
 
 flags.DEFINE_integer("stage_index", 0, "Training stage index")
 
-flags.DEFINE_integer("predefined_state_name", 0, "Predefined state name")
+flags.DEFINE_string("predefined_state_name", 0, "Predefined state name")
 
 flags.DEFINE_integer(
     "max_seq_length", 128,
