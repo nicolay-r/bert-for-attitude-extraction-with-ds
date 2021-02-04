@@ -74,6 +74,8 @@ flags.DEFINE_integer("cv_index", 0, "Cross-validation index of the task.")
 
 flags.DEFINE_integer("stage_index", 0, "Training stage index")
 
+flags.DEFINE_integer("predefined_state_name", 0, "Predefined state name")
+
 flags.DEFINE_integer(
     "max_seq_length", 128,
     "The maximum total input sequence length after WordPiece tokenization. "
@@ -783,8 +785,10 @@ def main(_):
 
     result = estimator.predict(input_fn=predict_input_fn)
 
-    predict_filepath = "test_results_i{cv_index}_e{stage_index}.tsv".format(cv_index=FLAGS.cv_index,
-                                                                            stage_index=FLAGS.stage_index)
+    predict_filepath = "test_results_i{cv_index}_e{stage_index}_s{state}.tsv".format(
+        cv_index=FLAGS.cv_index,
+        stage_index=FLAGS.stage_index,
+        state=FLAGS.predefined_state_name)
 
     output_predict_file = os.path.join(FLAGS.output_dir, predict_filepath)
 
@@ -808,6 +812,7 @@ if __name__ == "__main__":
   flags.mark_flag_as_required("task_name")
   flags.mark_flag_as_required("cv_index")
   flags.mark_flag_as_required("stage_index")
+  flags.mark_flag_as_required("predefined_state_name")
   flags.mark_flag_as_required("vocab_file")
   flags.mark_flag_as_required("bert_config_file")
   flags.mark_flag_as_required("output_dir")

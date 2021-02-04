@@ -15,6 +15,7 @@ if [ $# -lt 1 ]; then
     echo "-d: root dir that contains serialized models"
     echo "-c: cv_count"
     echo "-b: batch size"
+    echo "-P: predefined state name"
     echo "------"
     echo "NOTE: <PART_INDEX> < <TOTAL_PARTS_COUNT>"
     echo "------"
@@ -25,7 +26,7 @@ if [ $# -lt 1 ]; then
 fi
 
 # Reading parameters using `getops` util.
-while getopts ":g:p:t:l:r:c:b:" opt; do
+while getopts ":g:p:t:l:r:c:b:P:" opt; do
   case $opt in
     g) card_index="$OPTARG"
       echo "GPU# utilized = $card_index"
@@ -60,6 +61,9 @@ while getopts ":g:p:t:l:r:c:b:" opt; do
     b) batch_size="$OPTARG"
       echo "batch_size = $batch_size"
       ;;
+    P) predefined_state_name="$OPTARG"
+    echo "predefined_state = $predefined_state_name"
+    ;;
     \?) echo "Invalid option -$OPTARG" >&2
       ;;
   esac
@@ -104,7 +108,8 @@ for i in $list; do
     if [ -d $target ]; then
       # Starting training and evaluation process.
       echo $task_name
-      ./_run_classifier.sh -g $card_index -s $target -t $task_name -c $cv_count -b $batch_size
+      ./_run_classifier.sh -g $card_index -s $target -t $task_name -c $cv_count -b $batch_size \
+        -p $predefined_state_name
     fi
 
 done;

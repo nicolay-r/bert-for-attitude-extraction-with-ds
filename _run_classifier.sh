@@ -15,13 +15,12 @@ total_epochs=30
 train_stages=$((total_epochs / train_epochs_step))
 batch_size=16
 tokens_per_context=128
-m_root="./pretrained/multi_cased_L-12_H-768_A-12"
 do_lowercasing=False
 use_custom_distance=False
 ############################################
 
 # Reading parameters using `getops` util.
-while getopts ":g:s:t:c:b:" opt; do
+while getopts ":g:s:t:c:b:p:" opt; do
   case $opt in
     g) device_index="$OPTARG"
     echo "DEVICE (GPU#) = $device_index"
@@ -38,11 +37,20 @@ while getopts ":g:s:t:c:b:" opt; do
     b) batch_size="$OPTARG"
     echo "batch_size = $batch_size"
     ;;
+    p) predefined_state_name="$OPTARG"
+    echo "predefined_state = $predefined_state_name"
+    # Composing a path to the directory with the
+    # precomputed stage.
+    m_root="./pretrained/"${predefined_state_name}
+    if ! [[ -d $m_root ]]; then
+      echo "Precomputed state not found: ${m_root}"
+      exit 1
+    fi
+    ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
   esac
 done
-
 
 it_index=0
 # For every index, related to cv_count, do:
@@ -83,6 +91,7 @@ while [ "$it_index" -lt $cv_count ]; do
           --task_name=$task_name \
           --cv_index=$it_index \
           --stage_index=$((train_stage * train_epochs_step)) \
+          --state_name=$predefined_state_name,
           --do_predict=true \
           --do_eval=true \
           --do_train=true \
