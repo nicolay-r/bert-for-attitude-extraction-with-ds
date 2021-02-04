@@ -86,16 +86,17 @@ while [ "$it_index" -lt $cv_count ]; do
 
       # We provide all the results withing the same source folder
       # in order to later apply evaluation towards the obtained results.
-      CUDA_VISIBLE_DEVICES=$device_index python3.6 run_classifier.py \
+      CUDA_VISIBLE_DEVICES=$device_index python run_classifier.py \
           --use_custom_distance=$use_custom_distance \
           --task_name=$task_name \
           --cv_index=$it_index \
           --stage_index=$((train_stage * train_epochs_step)) \
-          --state_name=$predefined_state_name,
+          --state_name=$predefined_state_name \
           --do_predict=true \
           --do_eval=true \
           --do_train=true \
-          --data_dir=$src --vocab_file=$m_root/vocab.txt \
+          --data_dir=$src \
+	  --vocab_file=$m_root/vocab.txt \
           --bert_config_file=$m_root/bert_config.json \
           --init_checkpoint=$m_root/bert_model.ckpt \
           --max_seq_length=$tokens_per_context --train_batch_size=$batch_size \
