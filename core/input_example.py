@@ -70,6 +70,12 @@ class InputExample(object):
 
     entities = [InputExample.OBJ_MASK, InputExample.SUBJ_MASK]
 
+    # NOTE: We additionally remove all the # symbols,
+    # however the latter could be done during serialization stage
+    # by selecting an appropriate entities formatter.
+    terms[e1_in] = terms[e1_in].replace("#", "")
+    terms[e2_in] = terms[e2_in].replace("#", "")
+
     assert(terms[e1_in] in entities)
     assert(terms[e2_in] in entities)
 

@@ -55,15 +55,18 @@ class SAE_2SM_Processor(DataProcessor):
                 continue
             guid = "%s-%s" % (set_type, i)
             if set_type == "test":
+                # Headers: id, news_id, text_a, s_obj, t_obj
                 label = "0"
-                text_a = tokenization.convert_to_unicode(line[1])
-                s_obj = tokenization.convert_to_unicode(line[2])
-                t_obj = tokenization.convert_to_unicode(line[3])
-            else:
-                label = tokenization.convert_to_unicode(line[1])
                 text_a = tokenization.convert_to_unicode(line[2])
                 s_obj = tokenization.convert_to_unicode(line[3])
                 t_obj = tokenization.convert_to_unicode(line[4])
+            else:
+                # Headers: id, news_id, label, text_a, s_obj, t_obj
+                label = tokenization.convert_to_unicode(line[2])
+                text_a = tokenization.convert_to_unicode(line[3])
+                s_obj = tokenization.convert_to_unicode(line[4])
+                t_obj = tokenization.convert_to_unicode(line[5])
+
             examples.append(
                 InputExample(guid=guid,
                              text_a=text_a,
@@ -123,17 +126,20 @@ class SAE_PB_Processor(DataProcessor):
                 continue
             guid = "%s-%s" % (set_type, i)
             if set_type == "test":
+                # Headers: id, news_id, text_a, text_b, s_obj, t_obj
                 label = "0"
-                text_a = tokenization.convert_to_unicode(line[1])
-                text_b = tokenization.convert_to_unicode(line[2])
-                s_obj = tokenization.convert_to_unicode(line[3])
-                t_obj = tokenization.convert_to_unicode(line[4])
-            else:
-                label = tokenization.convert_to_unicode(line[1])
                 text_a = tokenization.convert_to_unicode(line[2])
                 text_b = tokenization.convert_to_unicode(line[3])
                 s_obj = tokenization.convert_to_unicode(line[4])
                 t_obj = tokenization.convert_to_unicode(line[5])
+            else:
+                # Headers: id, news_id, label, text_a, text_b, s_obj, t_obj
+                label = tokenization.convert_to_unicode(line[2])
+                text_a = tokenization.convert_to_unicode(line[3])
+                text_b = tokenization.convert_to_unicode(line[4])
+                s_obj = tokenization.convert_to_unicode(line[5])
+                t_obj = tokenization.convert_to_unicode(line[6])
+
             examples.append(
                 InputExample(guid=guid,
                              text_a=text_a,
@@ -187,17 +193,20 @@ class SAE_2PM_Processor(DataProcessor):
                 continue
             guid = "%s-%s" % (set_type, i)
             if set_type == "test":
+                # Headers: id, news_id, text_a, text_b, s_obj, t_obj
                 label = "0"
-                text_a = tokenization.convert_to_unicode(line[1])
-                text_b = tokenization.convert_to_unicode(line[2])
-                s_obj = tokenization.convert_to_unicode(line[3])
-                t_obj = tokenization.convert_to_unicode(line[4])
-            else:
-                label = tokenization.convert_to_unicode(line[1])
                 text_a = tokenization.convert_to_unicode(line[2])
                 text_b = tokenization.convert_to_unicode(line[3])
                 s_obj = tokenization.convert_to_unicode(line[4])
                 t_obj = tokenization.convert_to_unicode(line[5])
+            else:
+                # Headers: id, news_id, label, text_a, text_b, s_obj, t_obj
+                label = tokenization.convert_to_unicode(line[2])
+                text_a = tokenization.convert_to_unicode(line[3])
+                text_b = tokenization.convert_to_unicode(line[4])
+                s_obj = tokenization.convert_to_unicode(line[5])
+                t_obj = tokenization.convert_to_unicode(line[6])
+
             examples.append(
                 InputExample(guid=guid,
                              text_a=text_a,
