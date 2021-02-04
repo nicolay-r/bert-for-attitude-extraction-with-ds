@@ -6,7 +6,7 @@
 ########################################
 
 if [ $# -lt 1 ]; then
-    echo "Usage ./_run.sh -cg<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r <ROOT_DIR> -c"
+    echo "Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r <ROOT_DIR> -c"
     echo "------"
     echo "-g: index of the GPU to be utilized in experiments."
     echo "-p: part index to be used in a whole list of models as a payload"
@@ -26,27 +26,45 @@ fi
 while getopts ":g:p:t:l:r:c:" opt; do
   case $opt in
     g) card_index="$OPTARG"
-    echo "GPU# utilized = $card_index"
-    ;;
+      echo "GPU# utilized = $card_index"
+      ;;
     p) part_index="$OPTARG"
-    echo "part_index = $part_index"
-    ;;
+      echo "part_index = $part_index"
+      ;;
     t) parts_count="$OPTARG"
-    echo "parts_count = $parts_count"
-    ;;
+      echo "parts_count = $parts_count"
+      ;;
     l) labels_count="$OPTARG"
-    echo "labels_count = $labels_count"
-    ;;
+      if [ $labels_count -eq 2 -o $labels_count -eq 3 ]
+      then
+          echo "Labels is $labels_count."
+      else
+          echo "Labels needs to be either 2 or 3, $labels_count found instead."
+          exit 1
+      fi
+      ;;
     r) root_dir="$OPTARG"
-    echo "root_dir = $labels_count"
-    ;;
+      echo "root_dir = $labels_count"
+      ;;
     c) cv_count="$OPTARG"
-    echo "cv_count = $cv_count"
-    ;;
+      if [ $cv_count -eq 1 -o $cv_count -eq 3 ]
+      then
+          echo "cv_count is $cv_count."
+      else
+          echo "cv_count to be either 1 or 3, $cv_count found instead."
+          exit 1
+      fi
+      ;;
     \?) echo "Invalid option -$OPTARG" >&2
-    ;;
+      ;;
   esac
 done
+
+# Additional checks.
+if ! (( $part_index < $parts_count )) ; then
+  echo "part_index ($part_index) greater or equal than parts count ($parts_count)"
+  exit 1
+fi
 
 # Obtaining list of <PARTS>
 # which will be stored in modes_per_card variable
