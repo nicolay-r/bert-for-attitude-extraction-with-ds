@@ -6,24 +6,26 @@
 ########################################
 
 if [ $# -lt 1 ]; then
-    echo "Usage ./_run.sh -c <GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT>"
+    echo "Usage ./_run.sh -cg<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r <ROOT_DIR> -c"
     echo "------"
-    echo "-c: index of the GPU to be utilized in experiments."
+    echo "-g: index of the GPU to be utilized in experiments."
     echo "-p: part index to be used in a whole list of models as a payload"
     echo "-l: labels count to utilized"
+    echo "-d: root dir that contains serialized models"
+    echo "-C: cv_count"
     echo "------"
     echo "NOTE: <PART_INDEX> < <TOTAL_PARTS_COUNT>"
     echo "------"
     echo "Example of how to run on card#1, part0 out of 4, in 'nohup' mode:"
-    echo "nohup ./_run.sh 1 0 4 &> log_card_0.txt &"
+    echo "nohup ./_run.sh -g 1 -p 0 -t 4 -l 3 -r <DIR> -c 3 &> log_card_0.txt &"
     echo "------"
     exit
 fi
 
 # Reading parameters using `getops` util.
-while getopts ":c:p:t:l:" opt; do
+while getopts ":g:p:t:l:r:c:" opt; do
   case $opt in
-    c) card_index="$OPTARG"
+    g) card_index="$OPTARG"
     echo "GPU# utilized = $card_index"
     ;;
     p) part_index="$OPTARG"
@@ -34,6 +36,12 @@ while getopts ":c:p:t:l:" opt; do
     ;;
     l) labels_count="$OPTARG"
     echo "labels_count = $labels_count"
+    ;;
+    r) root_dir="$OPTARG"
+    echo "root_dir = $labels_count"
+    ;;
+    c) cv_count="$OPTARG"
+    echo "cv_count = $cv_count"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
@@ -56,18 +64,22 @@ for i in $list; do
     OLDIFS=$IFS
     IFS=','
 
-    # Split into the follwing args:
-    # $1 -- folder,
+    # Split into the following args:
+    # $1 -- model_folder,
     # $2 -- task_name
     set -- $i;
 
-    folder=$1
+    # local model_folder.
+    model_folder=$1
     task_name=$2
 
-    src=./data/$1
+    # The result target path is a concatenation of the root directory
+    # of the particular experiment and the related locat model derectory
+    # in it.
+    target="${root_dir}${model_folder}"
 
-    # ./run_classifier.sh $card_index $folder $task_name
-    echo ./run_classifier.sh $card_index $folder $task_name
+    # Starting training and evaluation process.
+    ./_run_classifier.sh -g $card_index -s $target -t $task_name -c $cv_count
 
 done;
 

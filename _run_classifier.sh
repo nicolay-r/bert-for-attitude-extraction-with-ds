@@ -2,49 +2,41 @@
 ###############################################
 # Setup Parameters
 # The output folder depends on the DEVICE INDEX.
-# Arguments
-# $1 gpu index
-# $2 folder
-# $3 task_name
 ###############################################
 
-# Reading arguments
-device_index=$1
-model_folder=$2
-task_name=$3
+echo "---"
+echo "Running BERT task with the following parameters:"
 
-echo ---
-echo Running BERT task with the following parameters:
-echo DEVICE: $device_index
-echo DIR: $model_folder
-echo TASK: $task_name
-
-
-tokens_per_context=128
+# Reading parameters using `getops` util.
+while getopts ":g:s:t:c:" opt; do
+  case $opt in
+    g) device_index="$OPTARG"
+    echo "DEVICE (GPU#) = $device_index"
+    ;;
+    s) src="$OPTARG"
+    echo "DIR (model_folder) = $src"
+    ;;
+    s) task_name="$OPTARG"
+    echo "TASK (task_name) = $task_name"
+    ;;
+    c) cv_count="$OPTARG"
+    echo "CV_COUNT (cv_count) = $cv_count"
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
 
 ############################################
 # Considering such parameters for 8GB of RAM
 ############################################
-batch_size=16
-############################################
-
 epochs=30.0
+batch_size=16
+tokens_per_context=128
 m_root="./pretrained/multi_cased_L-12_H-768_A-12"
 do_lowercasing=False
 use_custom_distance=False
-
-src=./data/$model_folder
-
-predict_file_name=test_results.tsv
-
-cv_count=1
-if [[ $model_folder == "cv-"* ]]; then
-    cv_count=3;
-    echo "Running in Cross-Validation Mode"
-    echo "CV Count: "$cv_count
-else
-    echo "Running in Fixed Mode"
-fi
+############################################
 
 i=0
 while [ "$i" -lt $cv_count ]; do
@@ -89,32 +81,15 @@ while [ "$i" -lt $cv_count ]; do
         --learning_rate=2e-5 \
         --warmup_proportion=0.1 \
         --num_train_epochs=$epochs \
-        --output_dir=$out_dir \
+        # We provide all the results withing the same source folder
+        # in order to later apply evaluation towards the obtained results.
+        --output_dir=$src \
         --do_lower_case=$do_lowercasing \
         --save_checkpoints_steps 10000
 
     # Create output folder
     result_out=./bert-model-results/$model_folder
     mkdir -p $result_out
-
-    out_template="result-test-"$cv_index".csv"
-    source_file=$out_dir/$predict_file_name
-    target_file=$result_out/$out_template
-
-    if [ ! -f $source_file ]; then
-       echo "Source result file does not exists: "$source_file
-       echo "Skipping copy ..."
-    fi
-
-    if [ -f $target_file ]; then
-       echo "Target file already exists: "$target_file
-       echo "Skipping copy ..."
-       break
-    fi
-
-    # Copy results
-    cp $source_file $target_file
-    echo "Copy results to: "$target_file
 
     i=$(( i + 1 ))
 
