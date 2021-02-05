@@ -82,7 +82,11 @@ while [ "$it_index" -lt $cv_count ]; do
     echo "Current Iteration Index: "$it_index
 
     train_stage=0
-    while [ "$train_stage" -lt $train_stages ]; do
+    while [ "$train_stage" -le $train_stages ]; do
+
+      # Calculating total amount of epochs from the very
+      # beginning till the next stop for evaluation process.
+      epoch_to_stop=$((train_stage * train_epochs_step))
 
       # We provide all the results withing the same source folder
       # in order to later apply evaluation towards the obtained results.
@@ -90,7 +94,7 @@ while [ "$it_index" -lt $cv_count ]; do
           --use_custom_distance=$use_custom_distance \
           --task_name=$task_name \
           --cv_index=$it_index \
-          --stage_index=$((train_stage * train_epochs_step)) \
+          --stage_index=$epoch_to_stop \
           --predefined_state_name=$predefined_state_name \
           --do_predict=true \
           --do_eval=true \
@@ -103,7 +107,7 @@ while [ "$it_index" -lt $cv_count ]; do
           --train_batch_size=$batch_size \
           --learning_rate=2e-5 \
           --warmup_proportion=0.1 \
-          --num_train_epochs=$train_epochs_step \
+          --num_train_epochs=$epoch_to_stop \
           --output_dir=$out_dir \
           --results_dir=$src \
           --do_lower_case=$do_lowercasing \
