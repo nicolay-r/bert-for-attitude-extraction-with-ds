@@ -11,7 +11,7 @@ echo "Running BERT task with the following parameters:"
 # Considering such parameters for 8GB of RAM
 ############################################
 train_epochs_step=5
-total_epochs=30
+total_epochs=250
 train_stages=$((total_epochs / train_epochs_step))
 batch_size=16
 tokens_per_context=128
@@ -20,10 +20,13 @@ use_custom_distance=False
 ############################################
 
 # Reading parameters using `getops` util.
-while getopts ":g:s:t:c:b:p:" opt; do
+while getopts ":g:e:s:t:c:b:p:" opt; do
   case $opt in
     g) device_index="$OPTARG"
     echo "DEVICE (GPU#) = $device_index"
+    ;;
+    e) total_epochs="$OPTARG"
+    echo "EPOCHS = $total_epochs"
     ;;
     s) src="$OPTARG"
     echo "DIR (model_folder) = $src"
@@ -88,7 +91,7 @@ while [ "$it_index" -lt $cv_count ]; do
       # beginning till the next stop for evaluation process.
       epoch_to_stop=$((train_stage * train_epochs_step))
 
-      # We provide all the results withing the same source folder
+      # We provide all the results within the same source folder
       # in order to later apply evaluation towards the obtained results.
       CUDA_VISIBLE_DEVICES=$device_index python run_classifier.py \
           --use_custom_distance=$use_custom_distance \
@@ -100,6 +103,7 @@ while [ "$it_index" -lt $cv_count ]; do
           --do_eval=true \
           --do_train=true \
           --data_dir=$src \
+	  --learning_rate=0.1 \
           --vocab_file=$m_root/vocab.txt \
           --bert_config_file=$m_root/bert_config.json \
           --init_checkpoint=$m_root/bert_model.ckpt \
