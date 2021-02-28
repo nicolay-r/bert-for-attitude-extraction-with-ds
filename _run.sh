@@ -65,7 +65,7 @@ while getopts ":g:p:t:l:r:c:b:P:e:" opt; do
     P) predefined_state_name="$OPTARG"
     echo "predefined_state = $predefined_state_name"
     ;;
-    e) epochs="$EPOCHS"
+    e) epochs="$OPTARG"
     echo "epochs = $epochs"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
