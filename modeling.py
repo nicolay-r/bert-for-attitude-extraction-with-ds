@@ -190,6 +190,7 @@ class BertModel(object):
             position_ids=position_ids,
             token_type_vocab_size=config.type_vocab_size,
             token_type_embedding_name="token_type_embeddings",
+            use_position_embeddings=True,
             position_embedding_name="position_embeddings",
             initializer_range=config.initializer_range,
             max_position_embeddings=config.max_position_embeddings,
@@ -433,6 +434,7 @@ def embedding_postprocessor(input_tensor,
                             position_ids=None,
                             token_type_vocab_size=16,
                             token_type_embedding_name="token_type_embeddings",
+                            use_position_embeddings=True,
                             position_embedding_name="position_embeddings",
                             initializer_range=0.02,
                             max_position_embeddings=512,
@@ -449,6 +451,8 @@ def embedding_postprocessor(input_tensor,
     token_type_vocab_size: int. The vocabulary size of `token_type_ids`.
     token_type_embedding_name: string. The name of the embedding table variable
       for token type ids.
+    use_position_embeddings: bool. Whether to add position embeddings for the
+      position of each token in the sequence.
     position_embedding_name: string. The name of the embedding table variable
       for positional embeddings.
     initializer_range: float. Range of the weight initialization.
@@ -487,8 +491,6 @@ def embedding_postprocessor(input_tensor,
                                        [batch_size, seq_length, width])
     output += token_type_embeddings
 
-  use_position_embeddings = position_ids is not None
-
   if use_position_embeddings:
     assert_op = tf.assert_less_equal(seq_length, max_position_embeddings)
     with tf.control_dependencies([assert_op]):
@@ -503,7 +505,7 @@ def embedding_postprocessor(input_tensor,
       # tasks that do not have long sequences.
       sliced = tf.slice(full_position_embeddings, [0, 0], [seq_length, -1])
 
-      if use_position_embeddings:
+      if position_ids is not None:
         position_embeddings = reorder_elements_in_input(
           sliced=sliced,
           inds=position_ids,
