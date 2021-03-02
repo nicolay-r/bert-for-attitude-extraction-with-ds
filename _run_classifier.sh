@@ -12,7 +12,6 @@ echo "Running BERT task with the following parameters:"
 ############################################
 train_epochs_step=5
 total_epochs=250
-train_stages=$((total_epochs / train_epochs_step))
 batch_size=16
 tokens_per_context=128
 do_lowercasing=False
@@ -54,6 +53,8 @@ while getopts ":g:e:s:t:c:b:p:" opt; do
     ;;
   esac
 done
+
+train_stages=$((total_epochs / train_epochs_step))
 
 it_index=0
 # For every index, related to cv_count, do:
