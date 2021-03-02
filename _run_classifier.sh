@@ -92,6 +92,15 @@ while [ "$it_index" -lt $cv_count ]; do
       # beginning till the next stop for evaluation process.
       epoch_to_stop=$((train_stage * train_epochs_step))
 
+      # We provide initial warmup proportion only in case
+      # when we do the first k epochs.
+      warmup_proportion=0
+      if [[ "$train_stage" -eq "0" ]]; then
+           warmup_proportion=1
+      fi
+
+      echo "WARMUP_PROPORTION: "$warmup_proportion 
+
       # We provide all the results within the same source folder
       # in order to later apply evaluation towards the obtained results.
       CUDA_VISIBLE_DEVICES=$device_index python run_classifier.py \
@@ -116,7 +125,8 @@ while [ "$it_index" -lt $cv_count ]; do
           --output_dir=$out_dir \
           --results_dir=$src \
           --do_lower_case=$do_lowercasing \
-          --save_checkpoints_steps 10000
+          --save_checkpoints_steps 10000 \
+          --warmup_proportion=$warmup_proportion
 
       # Moving to the next training stage.
       train_stage=$(( train_stage + 1 ))
