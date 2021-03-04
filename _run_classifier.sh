@@ -15,11 +15,15 @@ total_epochs=250
 batch_size=16
 tokens_per_context=128
 do_lowercasing=False
-use_custom_distance=False
+use_custom_distance=True
+do_predict=True
+model_tag=None
 ############################################
 
+echo "Use_custom_distance: "$use_custom_distance 
+
 # Reading parameters using `getops` util.
-while getopts ":g:e:s:t:c:b:p:" opt; do
+while getopts ":g:e:s:t:c:b:P:T:M:p:" opt; do
   case $opt in
     g) device_index="$OPTARG"
     echo "DEVICE (GPU#) = $device_index"
@@ -38,6 +42,15 @@ while getopts ":g:e:s:t:c:b:p:" opt; do
     ;;
     b) batch_size="$OPTARG"
     echo "batch_size = $batch_size"
+    ;;
+    P) do_predict="$OPTARG"
+    echo "do_predict = $do_predict"
+    ;;
+    T) train_epochs_step="$OPTARG"
+    echo "train_epochs_step = $train_epochs_step"
+    ;;
+    M) model_tag="$OPTARG"
+    echo "model_tag = $model_tag"
     ;;
     p) predefined_state_name="$OPTARG"
     echo "predefined_state = $predefined_state_name"
@@ -66,7 +79,7 @@ while [ "$it_index" -lt $cv_count ]; do
     rm -rf $out_dir/*
 
     valid=1
-    for data_type in "train" "test"; do
+    for data_type in "train"; do
         input_template="sample-"$data_type"-"$it_index".tsv.gz"
         input_file=$src/$input_template
 
@@ -109,8 +122,9 @@ while [ "$it_index" -lt $cv_count ]; do
           --cv_index=$it_index \
           --stage_index=$epoch_to_stop \
           --predefined_state_name=$predefined_state_name \
-          --do_predict=true \
+          --do_predict=$do_predict \
           --do_eval=true \
+          --model_tag=$model_tag \
           --do_train=true \
           --data_dir=$src \
 	  --learning_rate=0.1 \

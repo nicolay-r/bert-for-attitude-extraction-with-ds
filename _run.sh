@@ -16,18 +16,27 @@ if [ $# -lt 1 ]; then
     echo "-c: cv_count"
     echo "-b: batch size"
     echo "-P: predefined state name"
+    echo "-T: train epoch step"
+    echo "-p: do predict"
     echo "-e: epochs count"
+    echo "-M: model tag"
     echo "------"
     echo "NOTE: <PART_INDEX> < <TOTAL_PARTS_COUNT>"
     echo "------"
     echo "Example of how to run on card#1, part0 out of 4, in 'nohup' mode:"
-    echo "nohup ./_run.sh -g 1 -p 0 -t 4 -l 3 -r <DIR> -c 3 &> log_card_0.txt &"
+    echo "nohup ./_run.sh -g 1 -p 0 -t 4 -l 3 -r <DIR> -c 3 -p True &> log_card_0.txt &"
     echo "------"
     exit
 fi
 
+########################################
+# Default parameters
+########################################
+do_predict=True
+########################################
+
 # Reading parameters using `getops` util.
-while getopts ":g:p:t:l:r:c:b:P:e:" opt; do
+while getopts ":g:p:t:l:r:c:b:P:A:e:M:T:" opt; do
   case $opt in
     g) card_index="$OPTARG"
       echo "GPU# utilized = $card_index"
@@ -65,8 +74,17 @@ while getopts ":g:p:t:l:r:c:b:P:e:" opt; do
     P) predefined_state_name="$OPTARG"
     echo "predefined_state = $predefined_state_name"
     ;;
+    A) do_predict="$OPTARG"
+    echo "do_predict = $do_predict"
+    ;;
     e) epochs="$OPTARG"
     echo "epochs = $epochs"
+    ;;
+    M) model_tag="$OPTARG"
+    echo "model_tag = $model_tag"
+    ;;
+    T) train_epoch_step="$OPTARG"
+    echo "train_epoch_step = $train_epoch_step"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
       ;;
@@ -107,7 +125,7 @@ for i in $list; do
       # Starting training and evaluation process.
       echo $task_name
       ./_run_classifier.sh -g $card_index -s $target -t $task_name -c $cv_count -b $batch_size \
-        -p $predefined_state_name -e $epochs
+        -p $predefined_state_name -e $epochs -P $do_predict -T $train_epoch_step -M $model_tag
     fi
 
 done;

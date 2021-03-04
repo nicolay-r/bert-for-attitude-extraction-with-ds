@@ -82,6 +82,10 @@ flags.DEFINE_string(
     "predefined_state_name", None, 
     "Predefined state name")
 
+flags.DEFINE_string(
+    "model_tag", None, 
+    "Model tag utlized as a suffix for eval results saving")
+
 flags.DEFINE_integer(
     "max_seq_length", 128,
     "The maximum total input sequence length after WordPiece tokenization. "
@@ -797,7 +801,11 @@ def main(_):
         stage_index=FLAGS.stage_index,
         state=FLAGS.predefined_state_name)
 
-    output_predict_file = os.path.join(FLAGS.results_dir, predict_filepath)
+    result_dir = FLAGS.results_dir
+    if FLAGS.model_tag is not None:
+      results_dir = results_dir + tag
+
+    output_predict_file = os.path.join(results_dir, predict_filepath)
 
     with tf.gfile.GFile(output_predict_file, "w") as writer:
       num_written_lines = 0
