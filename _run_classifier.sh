@@ -10,20 +10,14 @@ echo "Running BERT task with the following parameters:"
 ############################################
 # Considering such parameters for 8GB of RAM
 ############################################
-train_epochs_step=5
 total_epochs=250
-batch_size=16
 tokens_per_context=128
 do_lowercasing=False
-use_custom_distance=True
-do_predict=True
-model_tag=None
+use_custom_distance=False
 ############################################
 
-echo "Use_custom_distance: "$use_custom_distance 
-
 # Reading parameters using `getops` util.
-while getopts ":g:e:s:t:c:b:P:T:M:p:" opt; do
+while getopts ":g:e:s:t:c:b:P:T:M:l:p:" opt; do
   case $opt in
     g) device_index="$OPTARG"
     echo "DEVICE (GPU#) = $device_index"
@@ -52,6 +46,9 @@ while getopts ":g:e:s:t:c:b:P:T:M:p:" opt; do
     M) model_tag="$OPTARG"
     echo "model_tag = $model_tag"
     ;;
+    l) learning_rate="$OPTARG"
+    echo "learning_rate = $learning_rate"
+    ;;
     p) predefined_state_name="$OPTARG"
     echo "predefined_state = $predefined_state_name"
     # Composing a path to the directory with the
@@ -68,6 +65,7 @@ while getopts ":g:e:s:t:c:b:P:T:M:p:" opt; do
 done
 
 train_stages=$((total_epochs / train_epochs_step))
+echo "Train stages: "$train_stages
 
 it_index=0
 # For every index, related to cv_count, do:
@@ -127,15 +125,15 @@ while [ "$it_index" -lt $cv_count ]; do
           --model_tag=$model_tag \
           --do_train=true \
           --data_dir=$src \
-	  --learning_rate=0.1 \
+	  --learning_rate=$learning_rate \
           --vocab_file=$m_root/vocab.txt \
           --bert_config_file=$m_root/bert_config.json \
           --init_checkpoint=$m_root/bert_model.ckpt \
           --max_seq_length=$tokens_per_context \
           --train_batch_size=$batch_size \
-          --learning_rate=2e-5 \
           --warmup_proportion=0.1 \
           --num_train_epochs=$epoch_to_stop \
+	  --learning_rate=2e-5 \
           --output_dir=$out_dir \
           --results_dir=$src \
           --do_lower_case=$do_lowercasing \

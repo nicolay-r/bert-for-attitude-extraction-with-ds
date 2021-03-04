@@ -33,6 +33,11 @@ fi
 # Default parameters
 ########################################
 do_predict=True
+learning_rate=0.1
+model_tag=None
+batch_size=16
+do_predict=True
+train_epochs_step=5
 ########################################
 
 # Reading parameters using `getops` util.
