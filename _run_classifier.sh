@@ -133,7 +133,6 @@ while [ "$it_index" -lt $cv_count ]; do
           --train_batch_size=$batch_size \
           --warmup_proportion=0.1 \
           --num_train_epochs=$epoch_to_stop \
-	  --learning_rate=2e-5 \
           --output_dir=$out_dir \
           --results_dir=$src \
           --do_lower_case=$do_lowercasing \

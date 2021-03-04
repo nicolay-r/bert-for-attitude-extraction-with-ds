@@ -20,6 +20,7 @@ if [ $# -lt 1 ]; then
     echo "-p: do predict"
     echo "-e: epochs count"
     echo "-M: model tag"
+    echo "-L: learning rate"
     echo "------"
     echo "NOTE: <PART_INDEX> < <TOTAL_PARTS_COUNT>"
     echo "------"
@@ -33,15 +34,15 @@ fi
 # Default parameters
 ########################################
 do_predict=True
-learning_rate=0.1
+learning_rate=2e-5
 model_tag=None
 batch_size=16
 do_predict=True
-train_epochs_step=5
+train_epoch_step=5
 ########################################
 
 # Reading parameters using `getops` util.
-while getopts ":g:p:t:l:r:c:b:P:A:e:M:T:" opt; do
+while getopts ":g:p:t:l:r:c:b:P:A:e:M:L:T:" opt; do
   case $opt in
     g) card_index="$OPTARG"
       echo "GPU# utilized = $card_index"
@@ -88,6 +89,9 @@ while getopts ":g:p:t:l:r:c:b:P:A:e:M:T:" opt; do
     M) model_tag="$OPTARG"
     echo "model_tag = $model_tag"
     ;;
+    L) learning_rate="$OPTARG"
+    echo "learning_rate = $learning_rate"
+    ;;
     T) train_epoch_step="$OPTARG"
     echo "train_epoch_step = $train_epoch_step"
     ;;
@@ -130,7 +134,7 @@ for i in $list; do
       # Starting training and evaluation process.
       echo $task_name
       ./_run_classifier.sh -g $card_index -s $target -t $task_name -c $cv_count -b $batch_size \
-        -p $predefined_state_name -e $epochs -P $do_predict -T $train_epoch_step -M $model_tag
+        -p $predefined_state_name -e $epochs -P $do_predict -T $train_epoch_step -M $model_tag -l $learning_rate
     fi
 
 done;
