@@ -52,7 +52,7 @@ while getopts ":g:e:s:t:c:b:P:T:M:l:W:C:p:" opt; do
     W) warmup_proportion="$OPTARG"
     echo "warmup_proportion = $warmup_proportion"
     ;;
-    C) checkpoint_filename="$checkpoint_filename"
+    C) checkpoint_filename="$OPTARG"
     echo "checkpoint_filename = $checkpoint_filename"
     ;;
     p) predefined_state_name="$OPTARG"
