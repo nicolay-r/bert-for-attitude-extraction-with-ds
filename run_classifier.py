@@ -804,10 +804,12 @@ def main(_):
 
     result_dir = FLAGS.results_dir
     if FLAGS.model_tag is not None:
-      results_dir = results_dir + '-' + FLAGS.model_tag 
+      result_dir = result_dir + '-' + FLAGS.model_tag 
       os.mkdir(result_dir)
 
-    output_predict_file = os.path.join(results_dir, predict_filepath)
+    print ("TARGET_PREDICTION_PATH", result_dir)
+
+    output_predict_file = os.path.join(result_dir, predict_filepath)
 
     with tf.gfile.GFile(output_predict_file, "w") as writer:
       num_written_lines = 0
