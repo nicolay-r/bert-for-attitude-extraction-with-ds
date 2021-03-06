@@ -17,7 +17,7 @@ use_custom_distance=False
 ############################################
 
 # Reading parameters using `getops` util.
-while getopts ":g:e:s:t:c:b:P:T:M:l:p:" opt; do
+while getopts ":g:e:s:t:c:b:P:T:M:l:W:C:p:" opt; do
   case $opt in
     g) device_index="$OPTARG"
     echo "DEVICE (GPU#) = $device_index"
@@ -48,6 +48,12 @@ while getopts ":g:e:s:t:c:b:P:T:M:l:p:" opt; do
     ;;
     l) learning_rate="$OPTARG"
     echo "learning_rate = $learning_rate"
+    ;;
+    W) warmup_proportion="$OPTARG"
+    echo "warmup_proportion = $warmup_proportion"
+    ;;
+    C) checkpoint_filename="$checkpoint_filename"
+    echo "checkpoint_filename = $checkpoint_filename"
     ;;
     p) predefined_state_name="$OPTARG"
     echo "predefined_state = $predefined_state_name"
@@ -105,9 +111,8 @@ while [ "$it_index" -lt $cv_count ]; do
 
       # We provide initial warmup proportion only in case
       # when we do the first k epochs.
-      warmup_proportion=0
-      if [[ "$train_stage" -eq "0" ]]; then
-           warmup_proportion=1
+      if [[ "$train_stage" -ne "0" ]]; then
+           warmup_proportion=0
       fi
 
       echo "WARMUP_PROPORTION: "$warmup_proportion 
@@ -128,10 +133,9 @@ while [ "$it_index" -lt $cv_count ]; do
 	  --learning_rate=$learning_rate \
           --vocab_file=$m_root/vocab.txt \
           --bert_config_file=$m_root/bert_config.json \
-          --init_checkpoint=$m_root/bert_model.ckpt \
+          --init_checkpoint=$m_root/$checkpoint_filename \
           --max_seq_length=$tokens_per_context \
           --train_batch_size=$batch_size \
-          --warmup_proportion=0.1 \
           --num_train_epochs=$epoch_to_stop \
           --output_dir=$out_dir \
           --results_dir=$src \

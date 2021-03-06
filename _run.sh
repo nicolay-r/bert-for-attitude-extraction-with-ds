@@ -19,8 +19,10 @@ if [ $# -lt 1 ]; then
     echo "-T: train epoch step"
     echo "-p: do predict"
     echo "-e: epochs count"
+    echo "-C: checkpoint name"
     echo "-M: model tag"
     echo "-L: learning rate"
+    echo "-W: warmup"
     echo "------"
     echo "NOTE: <PART_INDEX> < <TOTAL_PARTS_COUNT>"
     echo "------"
@@ -39,10 +41,12 @@ model_tag=None
 batch_size=16
 do_predict=True
 train_epoch_step=5
+warmup=0.1
+checkpoint=bert_model.ckpt
 ########################################
 
 # Reading parameters using `getops` util.
-while getopts ":g:p:t:l:r:c:b:P:A:e:M:L:T:" opt; do
+while getopts ":g:p:t:l:r:c:b:P:A:e:C:M:L:W:T:" opt; do
   case $opt in
     g) card_index="$OPTARG"
       echo "GPU# utilized = $card_index"
@@ -86,11 +90,17 @@ while getopts ":g:p:t:l:r:c:b:P:A:e:M:L:T:" opt; do
     e) epochs="$OPTARG"
     echo "epochs = $epochs"
     ;;
+    C) checkpoint="$OPTARG"
+    echo "checkpoint = $checkpoint"
+    ;;
     M) model_tag="$OPTARG"
     echo "model_tag = $model_tag"
     ;;
     L) learning_rate="$OPTARG"
     echo "learning_rate = $learning_rate"
+    ;;
+    W) warmup="$OPTARG"
+    echo "warmup = $warmup"
     ;;
     T) train_epoch_step="$OPTARG"
     echo "train_epoch_step = $train_epoch_step"
@@ -134,7 +144,8 @@ for i in $list; do
       # Starting training and evaluation process.
       echo $task_name
       ./_run_classifier.sh -g $card_index -s $target -t $task_name -c $cv_count -b $batch_size \
-        -p $predefined_state_name -e $epochs -P $do_predict -T $train_epoch_step -M $model_tag -l $learning_rate
+        -p $predefined_state_name -e $epochs -P $do_predict -T $train_epoch_step -M $model_tag -l $learning_rate \
+        -W $warmup -C $checkpoint
     fi
 
 done;

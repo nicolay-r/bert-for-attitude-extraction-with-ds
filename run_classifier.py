@@ -704,6 +704,7 @@ def main(_):
       predict_batch_size=FLAGS.predict_batch_size)
 
   if FLAGS.do_train:
+    print ("LEARNING RATE:", FLAGS.learning_rate)
     train_file = os.path.join(FLAGS.output_dir, "train.tf_record")
     file_based_convert_examples_to_features(
         train_examples, label_list, FLAGS.max_seq_length, tokenizer, train_file)
@@ -803,7 +804,8 @@ def main(_):
 
     result_dir = FLAGS.results_dir
     if FLAGS.model_tag is not None:
-      results_dir = results_dir + tag
+      results_dir = results_dir + '-' + FLAGS.model_tag 
+      os.mkdir(result_dir)
 
     output_predict_file = os.path.join(results_dir, predict_filepath)
 
