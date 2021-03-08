@@ -614,53 +614,55 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
   return features
 
 
-def do_eval(processor, label_list, tokenizer, estimator):
-    eval_examples = processor.get_dev_examples(FLAGS.data_dir)
-    num_actual_eval_examples = len(eval_examples)
-    if FLAGS.use_tpu:
-        # TPU requires a fixed batch size for all batches, therefore the number
-        # of examples must be a multiple of the batch size, or else examples
-        # will get dropped. So we pad with fake examples which are ignored
-        # later on. These do NOT count towards the metric (all tf.metrics
-        # support a per-instance weight, and these get a weight of 0.0).
-        while len(eval_examples) % FLAGS.eval_batch_size != 0:
-            eval_examples.append(PaddingInputExample())
+def do_eval(processor, label_list, tokenizer, estimator, save_results=True):
+  eval_examples = processor.get_dev_examples(FLAGS.data_dir)
+  num_actual_eval_examples = len(eval_examples)
+  if FLAGS.use_tpu:
+      # TPU requires a fixed batch size for all batches, therefore the number
+      # of examples must be a multiple of the batch size, or else examples
+      # will get dropped. So we pad with fake examples which are ignored
+      # later on. These do NOT count towards the metric (all tf.metrics
+      # support a per-instance weight, and these get a weight of 0.0).
+      while len(eval_examples) % FLAGS.eval_batch_size != 0:
+          eval_examples.append(PaddingInputExample())
 
-    eval_file = os.path.join(FLAGS.output_dir, "eval.tf_record")
-    file_based_convert_examples_to_features(
-        eval_examples, label_list, FLAGS.max_seq_length, tokenizer, eval_file)
+  eval_file = os.path.join(FLAGS.output_dir, "eval.tf_record")
+  file_based_convert_examples_to_features(
+      eval_examples, label_list, FLAGS.max_seq_length, tokenizer, eval_file)
 
+  if save_results:
     tf.logging.info("***** Running evaluation *****")
     tf.logging.info("  Num examples = %d (%d actual, %d padding)",
                     len(eval_examples), num_actual_eval_examples,
                     len(eval_examples) - num_actual_eval_examples)
     tf.logging.info("  Batch size = %d", FLAGS.eval_batch_size)
 
-    # This tells the estimator to run through the entire set.
-    eval_steps = None
-    # However, if running eval on the TPU, you will need to specify the
-    # number of steps.
-    if FLAGS.use_tpu:
-        assert len(eval_examples) % FLAGS.eval_batch_size == 0
-        eval_steps = int(len(eval_examples) // FLAGS.eval_batch_size)
+  # This tells the estimator to run through the entire set.
+  eval_steps = None
+  # However, if running eval on the TPU, you will need to specify the
+  # number of steps.
+  if FLAGS.use_tpu:
+    assert len(eval_examples) % FLAGS.eval_batch_size == 0
+    eval_steps = int(len(eval_examples) // FLAGS.eval_batch_size)
 
-    eval_drop_remainder = True if FLAGS.use_tpu else False
-    eval_input_fn = file_based_input_fn_builder(
-        input_file=eval_file,
-        seq_length=FLAGS.max_seq_length,
-        is_training=False,
-        drop_remainder=eval_drop_remainder)
+  eval_drop_remainder = True if FLAGS.use_tpu else False
+  eval_input_fn = file_based_input_fn_builder(
+      input_file=eval_file,
+      seq_length=FLAGS.max_seq_length,
+      is_training=False,
+      drop_remainder=eval_drop_remainder)
 
-    result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
+  result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
 
+  if save_results:
     output_eval_file = os.path.join(FLAGS.output_dir, "eval_results.txt")
     with tf.gfile.GFile(output_eval_file, "w") as writer:
-        tf.logging.info("***** Eval results *****")
-        for key in sorted(result.keys()):
-            tf.logging.info("  %s = %s", key, str(result[key]))
-            writer.write("%s = %s\n" % (key, str(result[key])))
+      tf.logging.info("***** Eval results *****")
+      for key in sorted(result.keys()):
+        tf.logging.info("  %s = %s", key, str(result[key]))
+        writer.write("%s = %s\n" % (key, str(result[key])))
 
-    return result
+  return result
 
 
 def main(_):
@@ -755,7 +757,8 @@ def main(_):
       predict_batch_size=FLAGS.predict_batch_size)
 
   if FLAGS.do_eval:
-    result = do_eval(processor=processor, tokenizer=tokenizer, label_list=label_list, estimator=estimator)
+    result = do_eval(processor=processor, tokenizer=tokenizer, label_list=label_list, estimator=estimator,
+                     save_results=False)
     result_acc = result["eval_accuracy"]
     if result_acc > FLAGS.eval_bound:
       print ("Terminating training process: {} > {}".format(str(result_acc), str(FLAGS.eval_bound)))
