@@ -108,6 +108,8 @@ flags.DEFINE_integer("predict_batch_size", 8, "Total batch size for predict.")
 
 flags.DEFINE_float("learning_rate", 5e-5, "The initial learning rate for Adam.")
 
+flags.DEFINE_float("eval_bound", 0.99, "Evaluation bound for training process termination.")
+
 flags.DEFINE_float("num_train_epochs", 3.0,
                    "Total number of training epochs to perform.")
 
@@ -612,6 +614,55 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
   return features
 
 
+def do_eval(processor, label_list, tokenizer, estimator):
+    eval_examples = processor.get_dev_examples(FLAGS.data_dir)
+    num_actual_eval_examples = len(eval_examples)
+    if FLAGS.use_tpu:
+        # TPU requires a fixed batch size for all batches, therefore the number
+        # of examples must be a multiple of the batch size, or else examples
+        # will get dropped. So we pad with fake examples which are ignored
+        # later on. These do NOT count towards the metric (all tf.metrics
+        # support a per-instance weight, and these get a weight of 0.0).
+        while len(eval_examples) % FLAGS.eval_batch_size != 0:
+            eval_examples.append(PaddingInputExample())
+
+    eval_file = os.path.join(FLAGS.output_dir, "eval.tf_record")
+    file_based_convert_examples_to_features(
+        eval_examples, label_list, FLAGS.max_seq_length, tokenizer, eval_file)
+
+    tf.logging.info("***** Running evaluation *****")
+    tf.logging.info("  Num examples = %d (%d actual, %d padding)",
+                    len(eval_examples), num_actual_eval_examples,
+                    len(eval_examples) - num_actual_eval_examples)
+    tf.logging.info("  Batch size = %d", FLAGS.eval_batch_size)
+
+    # This tells the estimator to run through the entire set.
+    eval_steps = None
+    # However, if running eval on the TPU, you will need to specify the
+    # number of steps.
+    if FLAGS.use_tpu:
+        assert len(eval_examples) % FLAGS.eval_batch_size == 0
+        eval_steps = int(len(eval_examples) // FLAGS.eval_batch_size)
+
+    eval_drop_remainder = True if FLAGS.use_tpu else False
+    eval_input_fn = file_based_input_fn_builder(
+        input_file=eval_file,
+        seq_length=FLAGS.max_seq_length,
+        is_training=False,
+        drop_remainder=eval_drop_remainder)
+
+    result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
+
+    output_eval_file = os.path.join(FLAGS.output_dir, "eval_results.txt")
+    with tf.gfile.GFile(output_eval_file, "w") as writer:
+        tf.logging.info("***** Eval results *****")
+        for key in sorted(result.keys()):
+            tf.logging.info("  %s = %s", key, str(result[key]))
+            writer.write("%s = %s\n" % (key, str(result[key])))
+
+    return result
+
+
 def main(_):
   tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -703,6 +754,13 @@ def main(_):
       eval_batch_size=FLAGS.eval_batch_size,
       predict_batch_size=FLAGS.predict_batch_size)
 
+  if FLAGS.do_eval:
+    result = do_eval(processor=processor, tokenizer=tokenizer, label_list=label_list, estimator=estimator)
+    result_acc = result["eval_accuracy"]
+    if result_acc > FLAGS.eval_bound:
+      print ("Terminating training process: {} > {}".format(str(result_acc), str(FLAGS.eval_bound)))
+      return
+
   if FLAGS.do_train:
     print ("LEARNING RATE:", FLAGS.learning_rate)
     train_file = os.path.join(FLAGS.output_dir, "train.tf_record")
@@ -720,50 +778,7 @@ def main(_):
     estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
 
   if FLAGS.do_eval:
-    eval_examples = processor.get_dev_examples(FLAGS.data_dir)
-    num_actual_eval_examples = len(eval_examples)
-    if FLAGS.use_tpu:
-      # TPU requires a fixed batch size for all batches, therefore the number
-      # of examples must be a multiple of the batch size, or else examples
-      # will get dropped. So we pad with fake examples which are ignored
-      # later on. These do NOT count towards the metric (all tf.metrics
-      # support a per-instance weight, and these get a weight of 0.0).
-      while len(eval_examples) % FLAGS.eval_batch_size != 0:
-        eval_examples.append(PaddingInputExample())
-
-    eval_file = os.path.join(FLAGS.output_dir, "eval.tf_record")
-    file_based_convert_examples_to_features(
-        eval_examples, label_list, FLAGS.max_seq_length, tokenizer, eval_file)
-
-    tf.logging.info("***** Running evaluation *****")
-    tf.logging.info("  Num examples = %d (%d actual, %d padding)",
-                    len(eval_examples), num_actual_eval_examples,
-                    len(eval_examples) - num_actual_eval_examples)
-    tf.logging.info("  Batch size = %d", FLAGS.eval_batch_size)
-
-    # This tells the estimator to run through the entire set.
-    eval_steps = None
-    # However, if running eval on the TPU, you will need to specify the
-    # number of steps.
-    if FLAGS.use_tpu:
-      assert len(eval_examples) % FLAGS.eval_batch_size == 0
-      eval_steps = int(len(eval_examples) // FLAGS.eval_batch_size)
-
-    eval_drop_remainder = True if FLAGS.use_tpu else False
-    eval_input_fn = file_based_input_fn_builder(
-        input_file=eval_file,
-        seq_length=FLAGS.max_seq_length,
-        is_training=False,
-        drop_remainder=eval_drop_remainder)
-
-    result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
-
-    output_eval_file = os.path.join(FLAGS.output_dir, "eval_results.txt")
-    with tf.gfile.GFile(output_eval_file, "w") as writer:
-      tf.logging.info("***** Eval results *****")
-      for key in sorted(result.keys()):
-        tf.logging.info("  %s = %s", key, str(result[key]))
-        writer.write("%s = %s\n" % (key, str(result[key])))
+    do_eval(processor=processor, tokenizer=tokenizer, label_list=label_list, estimator=estimator)
 
   if FLAGS.do_predict:
     predict_examples = processor.get_test_examples(FLAGS.data_dir)
@@ -804,8 +819,9 @@ def main(_):
 
     result_dir = FLAGS.results_dir
     if FLAGS.model_tag is not None:
-      result_dir = result_dir + '-' + FLAGS.model_tag 
-      os.mkdir(result_dir)
+      result_dir = result_dir + '-' + FLAGS.model_tag
+      if not os.path.exists(result_dir):
+          os.mkdir(result_dir)
 
     print ("TARGET_PREDICTION_PATH", result_dir)
 

@@ -130,7 +130,7 @@ while [ "$it_index" -lt $cv_count ]; do
           --model_tag=$model_tag \
           --do_train=true \
           --data_dir=$src \
-	  --learning_rate=$learning_rate \
+	        --learning_rate=$learning_rate \
           --vocab_file=$m_root/vocab.txt \
           --bert_config_file=$m_root/bert_config.json \
           --init_checkpoint=$m_root/$checkpoint_filename \
@@ -139,6 +139,7 @@ while [ "$it_index" -lt $cv_count ]; do
           --num_train_epochs=$epoch_to_stop \
           --output_dir=$out_dir \
           --results_dir=$src \
+          --eval_bound=0.991 \
           --do_lower_case=$do_lowercasing \
           --save_checkpoints_steps 10000 \
           --warmup_proportion=$warmup_proportion
