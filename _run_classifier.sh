@@ -73,6 +73,10 @@ done
 train_stages=$((total_epochs / train_epochs_step))
 echo "Train stages: "$train_stages
 
+# Cleaning previous results before starting experiment.
+# It is supposed that we keep all the results in *.tsv format.
+rm "$src/*.tsv"
+
 it_index=0
 # For every index, related to cv_count, do:
 while [ "$it_index" -lt $cv_count ]; do
@@ -81,6 +85,7 @@ while [ "$it_index" -lt $cv_count ]; do
     out_dir=./bert_output-$device_index
     mkdir -p $out_dir
     rm -rf $out_dir/*
+
 
     valid=1
     for data_type in "train"; do
