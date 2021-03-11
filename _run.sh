@@ -67,7 +67,7 @@ while getopts ":g:p:t:l:r:c:b:P:A:e:C:M:L:W:T:" opt; do
       fi
       ;;
     r) root_dir="$OPTARG"
-      echo "root_dir = $labels_count"
+      echo "root_dir = $root_dir"
       ;;
     c) cv_count="$OPTARG"
       if [ $cv_count -eq 1 -o $cv_count -eq 3 ]
