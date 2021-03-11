@@ -1,2 +1,2 @@
 #!/bin/bash
-tar -zcvf data.tar.gz  -X exclude.txt output
+tar -zcvf bert-results.tar.gz  -X exclude.txt output/rsr-*
