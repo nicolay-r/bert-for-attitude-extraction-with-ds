@@ -25,6 +25,8 @@ import modeling
 import six
 import tensorflow as tf
 
+import utils
+
 
 class BertModelTest(tf.test.TestCase):
 
@@ -72,6 +74,8 @@ class BertModelTest(tf.test.TestCase):
       input_ids = BertModelTest.ids_tensor([self.batch_size, self.seq_length],
                                            self.vocab_size)
 
+      dist_ids = BertModelTest.dist_tensor([self.batch_size, self.seq_length])
+
       input_mask = None
       if self.use_input_mask:
         input_mask = BertModelTest.ids_tensor(
@@ -99,6 +103,7 @@ class BertModelTest(tf.test.TestCase):
           config=config,
           is_training=self.is_training,
           input_ids=input_ids,
+          position_ids=dist_ids,
           input_mask=input_mask,
           token_type_ids=token_type_ids,
           scope=self.scope)
@@ -158,6 +163,21 @@ class BertModelTest(tf.test.TestCase):
       values.append(rng.randint(0, vocab_size - 1))
 
     return tf.constant(value=values, dtype=tf.int32, shape=shape, name=name)
+
+  @classmethod
+  def dist_tensor(cls, shape, rng=None, name=None):
+      """Creates a random int32 distance tensor of the shape within the vocab size."""
+      if rng is None:
+        rng = random.Random()
+
+      seq_length = shape[1]
+
+      values = []
+      for _ in range(shape[0]):
+        pos = [rng.randint(0, seq_length-1) for _ in range(2)]
+        values.extend(utils.__abs_nearest_dist(pos, seq_length))
+
+      return tf.constant(value=values, dtype=tf.int32, shape=shape, name=name)
 
   def assert_all_tensors_reachable(self, sess, outputs):
     """Checks that all the tensors in the graph are reachable from outputs."""
