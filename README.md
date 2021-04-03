@@ -6,6 +6,8 @@ We apply BERT for Sentiment Attitude Extraction task by experimenting within RuS
 
 Code depends on Google-BERT implementation [[original readme]](README-BERT.md).
 
+**Main Contribution**: It provides a custom input formatters [[code-reference]](https://github.com/nicolay-r/bert-for-attitude-extraction-with-ds/blob/abert-release/sae/processors.py)
+
 ## Installation
 
 > To be updated.
