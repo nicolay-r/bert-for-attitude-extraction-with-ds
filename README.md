@@ -1,4 +1,4 @@
-# BERT for Sentiment Attitude Extraction in Russian with Distant Supervision approach for pretraining
+# BERT for Sentiment Attitude Extraction in Russian with Pretraining on Distantly Supervised Data
 
 This repository contains the code for ...
 
@@ -25,6 +25,11 @@ List of utilized pretrained states:
 # TODO. Provide downloading script.
 ```
 
+It provides input formatting in following formats [[refered-paper]]():
+* `c` -- classic, i.e. `text_a` only;
+* NLI -- `text_a` + `text_b` with the mentioned attitude description in `text_a`;
+* QA -- as NLI, but `text_b` represents a question.
+
 ## Training
 
 Use `_run.sh` for training which allows to queue multiple training tasks (in list) for a selected GPU's.
@@ -36,7 +41,7 @@ This script represents a wrapper over `_run_classifier.sh`, which solves the tas
 Parameter `-p` corresponds to a particular **p**art of the total (`-t`) amount of tasks.
 We consider `-t 3`.
 
-### Supervised Learning
+### Supervised Learning Example
 
 ```sh
 ./_run.sh 
@@ -53,7 +58,7 @@ We consider `-t 3`.
   -W 0.1
 ```
 
-### Pre-training
+### Pre-training Tutoral
 
 Step 1. Run the pretraining
 ```
