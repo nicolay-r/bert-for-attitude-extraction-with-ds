@@ -55,6 +55,7 @@ We consider `-t 3`.
 
 ### Pre-training
 
+Step 1. Run the pretraining
 ```
 ./_run.sh -g 0,1 \
    -p 0 -t 3 \
@@ -65,6 +66,28 @@ We consider `-t 3`.
    -P multi_cased_L-12_H-768_A-12 \
    -e 5 \
    -A False
+```
+The target folder with the updated state is `bert-output-0,1`.
+
+**Step 2**. Copy the output folder into the `<TARGET-DIR>` of the `pretrained` dir as follows:
+```sh
+cp bert-output-0,1 ./pretrained/new-pretrained-state
+```
+
+**Step 3**. Copy the `vocab.txt` and `bert_config.json` from the original model (`multi_cased_L-12_H-768_A-12` in the related scenario).
+```
+cd ./pretrained/new-pretrained-state
+cp ../multi_cased_L-12_H-768_A-12/vocab.txt .
+cp ../multi_cased_L-12_H-768_A-12/bert_config.json .
+``` 
+This is a dirty hack which allows us to avoid modification of the related parameters while running `run_classifier.py`.
+
+**Result:** it allows us then to write as follows:
+```
+  ./_run.sh 
+    ...
+    -P new-pretrained-state
+    ...
 ```
 
 ### List of parameters
