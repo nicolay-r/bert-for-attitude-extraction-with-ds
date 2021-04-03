@@ -61,7 +61,7 @@ We consider `-t 3` since we deal with [`C`, `NLI`, `QA`] formats.
   -W 0.1
 ```
 
-### Pre-training Tutoral
+### Pre-training Tutorial
 
 **Step 1.** Run the pretraining
 ```
@@ -119,9 +119,11 @@ Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COU
     -W: warmup
 ```
 
-## Evaluation
+## RuSentRel related result Evaluation 
 
-> Using AREkit library.
+Result Evaluation is out of scope of this repository.
+
+Proceed with [[this]](https://github.com/nicolay-r/language-model-utils-for-attitude-extraction) repository.
 
 ## References:
 
