@@ -77,7 +77,7 @@ We consider `-t 3` since we deal with [`C`, `NLI`, `QA`] formats.
 ```
 The target folder with the updated state is `bert-output-0,1`.
 
-**Step 2**. Copy the output folder into the `<TARGET-DIR>` of the `pretrained` dir as follows:
+**Step 2**. Copy the output folder into the `new-pretrained-state` of the `pretrained` dir as follows:
 ```sh
 cp bert-output-0,1 ./pretrained/new-pretrained-state
 ```
