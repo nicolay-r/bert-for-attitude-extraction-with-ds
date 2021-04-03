@@ -21,7 +21,9 @@ List of utilized pretrained states:
 
 ## Prepare the data
 
-> To be updated.
+```sh
+# TODO. Provide downloading script.
+```
 
 ## Training
 
@@ -55,37 +57,35 @@ We consider `-t 3`.
 
 ```
 ./_run.sh -g 0,1 \
-   -p 1 -t 3 \
+   -p 0 -t 3 \
    -l 3 \
    -r output/ra-v1_2-balanced-tpc50_3l/ \
    -c 1 \
    -b 32 \
    -P multi_cased_L-12_H-768_A-12 \
    -e 5 \
-   -A False \
-   -T 1
+   -A False
 ```
 
-Next, we 
+### List of parameters
 
-### List of parameters.
 ```
-    echo "Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r <ROOT_DIR> -c <CV_COUNT> -b <BATCH_SIZE>"
-    echo "-A: do predict"
-    echo "-g: index of the GPU to be utilized in experiments."
-    echo "-p: part index to be used in a whole list of models as a payload"
-    echo "-l: labels count to utilized"
-    echo "-d: root dir that contains serialized models"
-    echo "-c: cv_count"
-    echo "-b: batch size"
-    echo "-P: predefined state name"
-    echo "-T: train epoch step"
-    echo "-p: do predict"
-    echo "-e: epochs count"
-    echo "-C: checkpoint name"
-    echo "-M: model tag"
-    echo "-L: learning rate"
-    echo "-W: warmup"
+Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r <ROOT_DIR> -c <CV_COUNT> -b <BATCH_SIZE>"
+    -A: do predict
+    -g: index of the GPU to be utilized in experiments.
+    -p: part index to be used in a whole list of models as a payload
+    -l: labels count to utilized
+    -d: root dir that contains serialized models
+    -c: cv_count
+    -b: batch size
+    -P: predefined state name
+    -T: train epoch step
+    -p: do predict
+    -e: epochs count
+    -C: checkpoint name
+    -M: model tag
+    -L: learning rate
+    -W: warmup
 ```
 
 ## Evaluation
