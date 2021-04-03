@@ -1,6 +1,6 @@
 #!/bin/bash
 
-subdir="../pretrained"
+subdir="."
 mkdir -p $subdir
 
 # BERT-Base Multilingual model

@@ -7,8 +7,9 @@
 
 if [ $# -lt 1 ]; then
     echo "Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r "
-    echo "  <ROOT_DIR> -c <CV_COUNT> -b <BATCH_SIZE>"
+    echo "  <ROOT_DIR> -c <CV_COUNT> -b <BATCH_SIZE> -A <DO_PREDICT>"
     echo "------"
+    echo "-A: do predict."
     echo "-g: index of the GPU to be utilized in experiments."
     echo "-p: part index to be used in a whole list of models as a payload"
     echo "-l: labels count to utilized"
@@ -20,6 +21,7 @@ if [ $# -lt 1 ]; then
     echo "-p: do predict"
     echo "-e: epochs count"
     echo "-C: checkpoint name"
+    echo "-r: root directory of the serialized data for experiment"
     echo "-M: model tag"
     echo "-L: learning rate"
     echo "-W: warmup"
