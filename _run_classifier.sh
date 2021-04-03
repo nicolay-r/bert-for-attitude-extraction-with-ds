@@ -121,6 +121,7 @@ while [ "$it_index" -lt $cv_count ]; do
       # We provide all the results within the same source folder
       # in order to later apply evaluation towards the obtained results.
       CUDA_VISIBLE_DEVICES=$device_index python run_classifier.py \
+	  --output_layer_seed=42 \
           --use_custom_distance=$use_custom_distance \
           --task_name=$task_name \
           --cv_index=$it_index \
@@ -131,7 +132,7 @@ while [ "$it_index" -lt $cv_count ]; do
           --model_tag=$model_tag \
           --do_train=true \
           --data_dir=$src \
-	        --learning_rate=$learning_rate \
+	  --learning_rate=$learning_rate \
           --vocab_file=$m_root/vocab.txt \
           --bert_config_file=$m_root/bert_config.json \
           --init_checkpoint=$m_root/$checkpoint_filename \

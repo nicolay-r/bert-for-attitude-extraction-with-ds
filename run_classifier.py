@@ -40,6 +40,10 @@ flags.DEFINE_string(
     "The input data dir. Should contain the .tsv files (or other data files) "
     "for the task.")
 
+flags.DEFINE_integer(
+    "output_layer_seed", 42,
+    "The random generator initial seed value for output classification layer")
+
 flags.DEFINE_string(
     "bert_config_file", None,
     "The config json file corresponding to the pre-trained BERT model. "
@@ -417,7 +421,7 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids, p
 
   output_weights = tf.get_variable(
       "output_weights", [num_labels, hidden_size],
-      initializer=tf.truncated_normal_initializer(stddev=0.02))
+      initializer=tf.truncated_normal_initializer(stddev=0.02, seed=FLAGS.output_layer_seed))
 
   output_bias = tf.get_variable(
       "output_bias", [num_labels], initializer=tf.zeros_initializer())
