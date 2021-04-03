@@ -28,9 +28,9 @@ List of utilized pretrained states:
 ```
 
 It provides input formatting in following formats [[refered-paper]]():
-* `c` -- classic, i.e. `text_a` only;
-* NLI -- `text_a` + `text_b` with the mentioned attitude description in `text_a`;
-* QA -- as NLI, but `text_b` represents a question.
+* `C` -- classic, i.e. `text_a` only;
+* `NLI` -- `text_a` + `text_b` with the mentioned attitude description in `text_a`;
+* `QA` -- as NLI, but `text_b` represents a question.
 
 ## Training
 
@@ -41,7 +41,8 @@ It could be modified for efficiency purposes.
 This script represents a wrapper over `_run_classifier.sh`, which solves the task of data-folding formats and  
 
 Parameter `-p` corresponds to a particular **p**art of the total (`-t`) amount of tasks.
-We consider `-t 3`.
+
+We consider `-t 3` since we deal with [`C`, `NLI`, `QA`] formats.
 
 ### Supervised Learning Example
 
@@ -62,7 +63,7 @@ We consider `-t 3`.
 
 ### Pre-training Tutoral
 
-Step 1. Run the pretraining
+**Step 1.** Run the pretraining
 ```
 ./_run.sh -g 0,1 \
    -p 0 -t 3 \
