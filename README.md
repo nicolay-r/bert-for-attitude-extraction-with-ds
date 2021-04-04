@@ -25,18 +25,27 @@ List of utilized pretrained states:
 
 ### For supervised learning and Fine-Tunning
 
-Download prepared for BERT data of RuSentRel-1.2:
+Download or Serialize Manually
+
+#### Download
+
+Supervised-Learning and Fine-Tunning:
 ```sh
+# Download prepared for BERT data of RuSentRel-1.2
 curl -L https://www.dropbox.com/s/bchz4bmvr5f6cod/rsr-1.2-ra-all.tar.gz?dl=1
 tar -xvf rsr-1.2-ra-all.tar.gz
 ```
-
-### For pretraining Distant Supervised Data
-
+Pretraining:
 ```sh
+# It includes the prepared for BERT samples of RuAttitudes 
+# (1.0, 2.0-base, 2.0-large, 2.0-base-neut, 2.0-large-neut).
 TODO.
 ```
-It includes the prepared for BERT samples of RuAttitudes (1.0, 2.0-base, 2.0-large, 2.0-base-neut, 2.0-large-neut).
+
+#### Manually
+
+Proceed with the following [repo](https://github.com/nicolay-r/language-model-utils-for-attitude-extraction)
+
 
 It provides input formatting in following formats [[refered-paper]]():
 * `C` -- classic, i.e. `text_a` only;
