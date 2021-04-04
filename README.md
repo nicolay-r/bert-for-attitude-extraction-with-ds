@@ -62,12 +62,11 @@ Brief list of a main
 -A: do predict
 -p: task type: 0 ('c'), 1 ('nli'), 2 ('qa')
 -l: labels count (2 or 3)
--c: cv_count 
+-c: cv_count (1 -- fixed Train/Test separation, or k -- k-fold CV)
 -b: batch size
 -P: pretrained state name
--T: train epoch step
--e: epochs count
--C: checkpoint name
+-T: epochs count before evaluation
+-e: total epochs count
 -W: warmup proportion
 ```
 
