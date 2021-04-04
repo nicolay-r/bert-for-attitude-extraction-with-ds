@@ -23,9 +23,20 @@ List of utilized pretrained states:
 
 ## Prepare the data
 
+### For supervised learning and Fine-Tunning
+
+Download prepared for BERT data of RuSentRel-1.2:
 ```sh
-# TODO. Provide downloading script.
+curl -L https://www.dropbox.com/s/bchz4bmvr5f6cod/rsr-1.2-ra-all.tar.gz?dl=1
+tar -xvf rsr-1.2-ra-all.tar.gz
 ```
+
+### For pretraining Distant Supervised Data
+
+```sh
+TODO.
+```
+It includes the prepared for BERT samples of RuAttitudes (1.0, 2.0-base, 2.0-large, 2.0-base-neut, 2.0-large-neut).
 
 It provides input formatting in following formats [[refered-paper]]():
 * `C` -- classic, i.e. `text_a` only;
