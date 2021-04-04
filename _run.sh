@@ -45,6 +45,10 @@ do_predict=True
 train_epoch_step=5
 warmup=0.1
 checkpoint=bert_model.ckpt
+# NOTE: we deal with only 'C', 'NLI', 'QA' tasks
+# therefore the total amount of task is limited
+# by value below.
+parts_count=3 
 ########################################
 
 # Reading parameters using `getops` util.
@@ -120,8 +124,8 @@ fi
 
 # Obtaining list of <PARTS>
 # which will be stored in modes_per_card variable
-# obtained from _models.sh
-source _models.sh -c $parts_count -l $labels_count
+# obtained from _training_tasks.sh
+source _training_tasks.sh -c $parts_count -l $labels_count
 
 # picking a certain part_index
 # from the whole available modes

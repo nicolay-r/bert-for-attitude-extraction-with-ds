@@ -40,16 +40,14 @@ However we use this functionality in order to pick only a particular task from t
 It could be modified for efficiency purposes.
 This script represents a wrapper over `_run_classifier.sh`, which solves the task of data-folding formats and  
 
-Parameter `-p` corresponds to a particular **p**art of the total (`-t`) amount of tasks.
-
-We consider `-t 3` since we deal with [`C`, `NLI`, `QA`] formats.
+Parameter `-p` corresponds to a particular index of the available tasks: [`C`, `NLI`, `QA`].
 
 ### Supervised Learning Example
 
 ```sh
 ./_run.sh 
   -g 2 \
-  -p 0 -t 3 \
+  -p 0 \
   -l 3 \
   -r output/rsr-v1_1-fixed-balanced-tpc50_3l/ \
   -c 1 \
@@ -66,7 +64,7 @@ We consider `-t 3` since we deal with [`C`, `NLI`, `QA`] formats.
 **Step 1.** Run the pretraining
 ```
 ./_run.sh -g 0,1 \
-   -p 0 -t 3 \
+   -p 0 \
    -l 3 \
    -r output/ra-v1_2-balanced-tpc50_3l/ \
    -c 1 \
@@ -79,12 +77,12 @@ The target folder with the updated state is `bert-output-0,1`.
 
 **Step 2**. Copy the output folder into the `new-pretrained-state` of the `pretrained` dir as follows:
 ```sh
-cp bert-output-0,1 ./pretrained/new-pretrained-state
+cp bert-output-0,1 ./pretrained/NEW-PRETRAINED-STATE
 ```
 
 **Step 3**. Copy the `vocab.txt` and `bert_config.json` from the original model (`multi_cased_L-12_H-768_A-12` in the related scenario).
 ```
-cd ./pretrained/new-pretrained-state
+cd ./pretrained/NEW-PRETRAINED-STATE
 cp ../multi_cased_L-12_H-768_A-12/vocab.txt .
 cp ../multi_cased_L-12_H-768_A-12/bert_config.json .
 ``` 
@@ -94,9 +92,32 @@ This is a dirty hack which allows us to avoid modification of the related parame
 ```
   ./_run.sh 
     ...
-    -P new-pretrained-state
+    -P NEW-PRETRAINED-STATE
     ...
 ```
+
+### Fine-tunning Tutorial
+**Step 1.** Obtain the last checkpoint from the `NEW-PRETRAINED-STATE`, which is a result of the pretraining stage [[section]](#pre-training-tutorial).
+Considering the latter as `model.ckpt-75596`.
+
+**Step 2.** Launch fine-tunning process:
+```
+./_run.sh -g 0 \
+	-p 2 \
+	-l 3 \
+	-r output/rsr-v1_1-fixed-balanced-tpc50_3l/ \
+	-c 1 \
+	-b 16 \
+	-P NEW-PRETRAINED-STATE \
+	-e 50 \
+	-M ft \
+	-W 0.1 \
+	-C model.ckpt-75596 \
+	-T 5
+```
+> NOTE: We provide tag by `-M` which allows us to separate the evaluation output from the orginal directory.
+
+**Result**: The evaluated results will be at: `rsr-v1_1-fixed-balanced-tpc50_3l-ft`
 
 ### List of parameters
 
