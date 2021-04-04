@@ -27,7 +27,12 @@ List of utilized pretrained states:
 
 Download or Serialize Manually
 
-#### Download
+It provides input formatting in following formats [[refered-paper]]():
+* `C` -- classic, i.e. `text_a` only;
+* `NLI` -- `text_a` + `text_b` with the mentioned attitude description in `text_a`;
+* `QA` -- as NLI, but `text_b` represents a question.
+
+#### Download [Easy]
 
 Supervised-Learning and Fine-Tunning:
 ```sh
@@ -46,11 +51,6 @@ TODO.
 
 Proceed with the following [repo](https://github.com/nicolay-r/language-model-utils-for-attitude-extraction)
 
-
-It provides input formatting in following formats [[refered-paper]]():
-* `C` -- classic, i.e. `text_a` only;
-* `NLI` -- `text_a` + `text_b` with the mentioned attitude description in `text_a`;
-* `QA` -- as NLI, but `text_b` represents a question.
 
 ## Training
 
