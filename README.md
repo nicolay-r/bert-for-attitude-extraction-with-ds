@@ -45,13 +45,31 @@ It provides input formatting in following formats [[refered-paper]]():
 
 ## Training
 
-Use `_run.sh` for training which allows to queue multiple training tasks (in list) for a selected GPU's.
+Use `_run.sh` for training which allows to queue multiple 
+[training tasks](https://github.com/nicolay-r/bert-for-attitude-extraction-with-ds/blob/abert-release/_training_tasks.sh)
+(in list) for a selected GPU's.
 However we use this functionality in order to pick only a particular task from the whole list 
 [[code-reference]](https://github.com/nicolay-r/bert-for-attitude-extraction-with-ds/blob/fd1331d8caad63681cacc713678f7fc429f8c180/_run.sh#L126).
 It could be modified for efficiency purposes.
 This script represents a wrapper over `_run_classifier.sh`, which solves the task of data-folding formats and  
 
 Parameter `-p` corresponds to a particular index of the available tasks: [`C`, `NLI`, `QA`].
+
+Brief list of a main 
+[[flags]](https://github.com/nicolay-r/bert-for-attitude-extraction-with-ds/blob/abert-release/_run.sh): 
+```
+-g: GPUs to be utilized in experiments.
+-A: do predict
+-p: task type: 0 ('c'), 1 ('nli'), 2 ('qa')
+-l: labels count (2 or 3)
+-c: cv_count 
+-b: batch size
+-P: pretrained state name
+-T: train epoch step
+-e: epochs count
+-C: checkpoint name
+-W: warmup proportion
+```
 
 ### Supervised Learning Example
 
@@ -72,7 +90,7 @@ Parameter `-p` corresponds to a particular index of the available tasks: [`C`, `
 
 ### Pre-training Tutorial
 
-**Step 1.** Run the pretraining
+**Step 1.** Launch pretraining (without evaluation):
 ```
 ./_run.sh -g 0,1 \
    -p 0 \
@@ -129,27 +147,6 @@ Considering the latter as `model.ckpt-75596`.
 > NOTE: We provide tag by `-M` which allows us to separate the evaluation output from the orginal directory.
 
 **Result**: The evaluated results will be at: `rsr-v1_1-fixed-balanced-tpc50_3l-ft`
-
-### List of parameters
-
-```
-Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r <ROOT_DIR> -c <CV_COUNT> -b <BATCH_SIZE>"
-    -A: do predict
-    -g: index of the GPU to be utilized in experiments.
-    -p: part index to be used in a whole list of models as a payload
-    -l: labels count to utilized
-    -d: root dir that contains serialized models
-    -c: cv_count
-    -b: batch size
-    -P: predefined state name
-    -T: train epoch step
-    -p: do predict
-    -e: epochs count
-    -C: checkpoint name
-    -M: model tag
-    -L: learning rate
-    -W: warmup
-```
 
 ## RuSentRel related result Evaluation 
 
