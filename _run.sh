@@ -7,8 +7,9 @@
 
 if [ $# -lt 1 ]; then
     echo "Usage ./_run.sh -g<GPU_ID> -p <PART_INDEX> -t <TOTAL_PARTS_COUNT> -l <LABELS_COUNT> -r "
-    echo "  <ROOT_DIR> -c <CV_COUNT> -b <BATCH_SIZE>"
+    echo "  <ROOT_DIR> -c <CV_COUNT> -b <BATCH_SIZE> -A <DO_PREDICT>"
     echo "------"
+    echo "-A: do predict."
     echo "-g: index of the GPU to be utilized in experiments."
     echo "-p: part index to be used in a whole list of models as a payload"
     echo "-l: labels count to utilized"
@@ -20,6 +21,7 @@ if [ $# -lt 1 ]; then
     echo "-p: do predict"
     echo "-e: epochs count"
     echo "-C: checkpoint name"
+    echo "-r: root directory of the serialized data for experiment"
     echo "-M: model tag"
     echo "-L: learning rate"
     echo "-W: warmup"
@@ -43,6 +45,10 @@ do_predict=True
 train_epoch_step=5
 warmup=0.1
 checkpoint=bert_model.ckpt
+# NOTE: we deal with only 'C', 'NLI', 'QA' tasks
+# therefore the total amount of task is limited
+# by value below.
+parts_count=3 
 ########################################
 
 # Reading parameters using `getops` util.
@@ -118,8 +124,8 @@ fi
 
 # Obtaining list of <PARTS>
 # which will be stored in modes_per_card variable
-# obtained from _models.sh
-source _models.sh -c $parts_count -l $labels_count
+# obtained from _training_tasks.sh
+source _training_tasks.sh -c $parts_count -l $labels_count
 
 # picking a certain part_index
 # from the whole available modes
