@@ -37,7 +37,7 @@ It provides input formatting in following formats [[refered-paper]]():
 Supervised-Learning and Fine-Tunning:
 ```sh
 # Download prepared for BERT data of RuSentRel-1.2
-curl -L https://www.dropbox.com/s/bchz4bmvr5f6cod/rsr-1.2-ra-all.tar.gz?dl=1
+curl -o rsr-1.2-ra-all.tar.gz -L https://www.dropbox.com/s/bchz4bmvr5f6cod/rsr-1.2-ra-all.tar.gz?dl=1
 tar -xvf rsr-1.2-ra-all.tar.gz
 ```
 Pretraining:
