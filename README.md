@@ -165,7 +165,7 @@ Result Evaluation is out of scope of this repository.
 
 Proceed with [[this]](https://github.com/nicolay-r/language-model-utils-for-attitude-extraction) repository.
 
-## References:
+## References
 
 * Utilizing BERT for Aspect-Based Sentiment Analysis via Constructing Auxiliary Sentence [[paper]](https://arxiv.org/abs/1903.09588)
 	* Chi Sun, Luyao Huang, Xipeng Qiu
