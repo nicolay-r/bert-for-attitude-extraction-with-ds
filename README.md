@@ -8,9 +8,11 @@ Code depends on Google-BERT implementation [[original readme]](README-BERT.md).
 
 **Main Contribution**: It provides a custom input formatters [[code-reference]](https://github.com/nicolay-r/bert-for-attitude-extraction-with-ds/blob/abert-release/sae/processors.py)
 
-## Installation
+## Application steps
 
-> To be updated.
+1. [Download pretrained states](#download-pretrained-states)
+2. [Prepare the data](#prepare-the-data)
+3. [Training](#training)
 
 ## Download Pretrained States
 
@@ -27,7 +29,7 @@ List of utilized pretrained states:
 
 Download or Serialize Manually
 
-It provides input formatting in following formats [[refered-paper]]():
+It provides input formatting in following formats [[refered-paper]](https://arxiv.org/pdf/1903.09588.pdf):
 * `C` -- classic, i.e. `text_a` only;
 * `NLI` -- `text_a` + `text_b` with the mentioned attitude description in `text_a`;
 * `QA` -- as NLI, but `text_b` represents a question.
@@ -157,7 +159,7 @@ Considering the latter as `model.ckpt-75596`.
 
 **Result**: The evaluated results will be at: `rsr-v1_1-fixed-balanced-tpc50_3l-ft`
 
-## RuSentRel related result Evaluation 
+## RuSentRel-related results Evaluation 
 
 Result Evaluation is out of scope of this repository.
 
@@ -165,4 +167,5 @@ Proceed with [[this]](https://github.com/nicolay-r/language-model-utils-for-atti
 
 ## References:
 
-> To be updated.
+* Utilizing BERT for Aspect-Based Sentiment Analysis
+via Constructing Auxiliary Sentence
