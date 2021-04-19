@@ -64,6 +64,8 @@ This script represents a wrapper over `_run_classifier.sh`, which solves the tas
 
 Parameter `-p` corresponds to a particular index of the available tasks: [`C`, `NLI`, `QA`].
 
+We provide `--output_layer_seed` [flag](https://github.com/nicolay-r/bert-for-attitude-extraction-with-ds/blob/75d61f2807e7c85a8f3b5cebec0ab32b5109b53a/run_classifier.py#L44) in order to provide stability in results.
+
 Brief list of a main 
 [[flags]](https://github.com/nicolay-r/bert-for-attitude-extraction-with-ds/blob/abert-release/_run.sh): 
 ```
