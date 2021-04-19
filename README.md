@@ -37,17 +37,18 @@ It provides input formatting in following formats [[refered-paper]]():
 Supervised-Learning and Fine-Tunning:
 ```sh
 # Download prepared for BERT data of RuSentRel-1.2
-curl -o rsr-1.2-ra-all.tar.gz -L https://www.dropbox.com/s/bchz4bmvr5f6cod/rsr-1.2-ra-all.tar.gz?dl=1
-tar -xvf rsr-1.2-ra-all.tar.gz
+curl -o rsr-1.2-ra-all.tar.gz -L https://www.dropbox.com/s/bchz4bmvr5f6cod/rsr-1.2-training.tar.gz?dl=1
+tar -xvf rsr-1.2-training.tar.gz
 ```
 Pretraining:
 ```sh
 # It includes the prepared for BERT samples of RuAttitudes 
 # (1.0, 2.0-base, 2.0-large, 2.0-base-neut, 2.0-large-neut).
-TODO.
+curl ra-any-pretraining.tar.gz -o https://www.dropbox.com/s/pwwvycrz1z401si/ra-any-pretraining.tar.gz?dl=1
+tar -xvf ra-any-pretraining.tar.gz
 ```
 
-#### Manually
+#### Manually [Requires extra time]
 
 Proceed with the following [repo](https://github.com/nicolay-r/language-model-utils-for-attitude-extraction)
 
