@@ -46,7 +46,7 @@ Pretraining:
 ```sh
 # It includes the prepared for BERT samples of RuAttitudes 
 # (1.0, 2.0-base, 2.0-large, 2.0-base-neut, 2.0-large-neut).
-curl ra-any-pretraining.tar.gz -o https://www.dropbox.com/s/pwwvycrz1z401si/ra-any-pretraining.tar.gz?dl=1
+curl -o ra-any-pretraining.tar.gz -L https://www.dropbox.com/s/pwwvycrz1z401si/ra-any-pretraining.tar.gz?dl=1
 tar -xvf ra-any-pretraining.tar.gz
 ```
 
