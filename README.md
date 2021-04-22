@@ -65,6 +65,8 @@ However we use this functionality in order to pick only a particular task from t
 It could be modified for efficiency purposes.
 This script represents a wrapper over `_run_classifier.sh`, which solves the task of data-folding formats and  
 
+We provide `--eval_bound` [flag](https://github.com/nicolay-r/bert-for-attitude-extraction-with-ds/blob/ccaf946ce39d23d72720d78e354c8d158d4790f6/run_classifier.py#L115) for training termination process.
+
 Parameter `-p` corresponds to a particular index of the available tasks: [`C`, `NLI`, `QA`].
 
 Brief list of a main 
