@@ -10,7 +10,9 @@ Code depends on Google-BERT implementation [[original readme]](README-BERT.md).
 
 ## Installation
 
-> To be updated.
+```
+pip install -r requirements.txt
+```
 
 ## Download Pretrained States
 
