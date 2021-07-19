@@ -1,6 +1,7 @@
 # BERT for Sentiment Attitude Extraction in Russian with Pretraining on Distantly Supervised Data
 
-This repository contains the code for ...
+![](task-intro.png)
+>Figure: Example of a context with attitudes mentioned in it; named entities «Russia» and «NATO» have the negative attitude towards each other with additional indication of other named entities.
 
 We apply BERT for Sentiment Attitude Extraction task by experimenting within RuSentRel-v1.2 dataset.
 
